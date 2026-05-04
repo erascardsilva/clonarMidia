@@ -29,3 +29,6 @@ build/windows/info.plist
 .DS_Store
 Thumbs.db
 
+#secret
+export.txt
+

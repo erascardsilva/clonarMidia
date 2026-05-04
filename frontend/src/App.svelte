@@ -5,7 +5,7 @@
   */
   import { onMount } from 'svelte';
   import { GetDisks, StartClone, IsRoot, ScanPartitions, RecoverFiles, RepairFS, ElevatePrivileges } from '../wailsjs/go/main/App.js';
-  import { EventsOn } from '../wailsjs/runtime/runtime.js';
+  import { EventsOn, BrowserOpenURL } from '../wailsjs/runtime/runtime.js';
   import { t, locale } from './i18n.js';
 
   let disks = [];
@@ -163,6 +163,10 @@
     if (bytesPerSec === 0) return '0 B/s';
     return formatSize(bytesPerSec) + '/s';
   }
+
+  function openDonate() {
+    BrowserOpenURL("https://www.paypal.com/ncp/payment/8V6WQCGN6HDCQ");
+  }
 </script>
 
 <div class="app-container">
@@ -203,6 +207,10 @@
       </button>
       <button class:active={currentView === 'sobre'} on:click={() => currentView = 'sobre'}>
         <span class="icon">ℹ️</span> {$t('nav.about')}
+      </button>
+
+      <button class="btn-donate" on:click={openDonate}>
+        <span class="icon">❤️</span> {$t('nav.donate')}
       </button>
 
       <div class="lang-selector-sidebar">
@@ -738,6 +746,18 @@
   nav button:hover, nav button.active {
     background: rgba(56, 189, 248, 0.1);
     color: var(--accent-color);
+  }
+
+  .btn-donate {
+    margin-top: 0.5rem;
+    color: #ff4d4d !important;
+    font-weight: bold;
+    border: 1px solid rgba(255, 77, 77, 0.2) !important;
+  }
+
+  .btn-donate:hover {
+    background: rgba(255, 77, 77, 0.1) !important;
+    border-color: #ff4d4d !important;
   }
 
   .spacer { flex-grow: 1; }
