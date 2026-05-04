@@ -1,0 +1,467 @@
+/*
+Clonar Mídia - Estilos Globais
+Criado por Erasmo Cardoso - Software Engineer | Electronics Technician
+*/
+
+/* Reset de Selects - Força Bruta */
+select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 12px 40px 12px 15px !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: calc(100% - 15px) center !important;
+}
+
+select option {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  padding: 10px !important;
+}
+
+select:focus {
+  border-color: var(--accent-color) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
+}
+
+:root {
+  --bg-color: #0f172a;
+  --sidebar-color: #1e293b;
+  --accent-color: #38bdf8;
+  --text-color: #f1f5f9;
+  --card-bg: rgba(30, 41, 59, 0.7);
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-label { font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+.stat-value { font-size: 1.8rem; font-weight: bold; }
+
+.text-success { color: var(--success-color); }
+.text-warning { color: var(--warning-color); }
+
+/* Table */
+.disk-table {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+th {
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+/* Badges */
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+.badge.success { background: rgba(16, 185, 129, 0.2); color: var(--success-color); }
+
+/* Partitions */
+.partition-layout {
+  display: flex;
+  gap: 2rem;
+  height: calc(100vh - 200px);
+}
+
+.disk-selector {
+  width: 250px;
+  padding: 1rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.disk-selector button {
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.disk-selector button.active {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  font-weight: bold;
+}
+
+.visual-disk {
+  flex: 1;
+  padding: 2rem;
+  border-radius: 16px;
+}
+
+.disk-bar {
+  height: 60px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  display: flex;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.part-block {
+  height: 100%;
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  background: linear-gradient(45deg, var(--accent-color), #818cf8);
+  color: var(--bg-color);
+}
+
+.btn-refresh {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-refresh:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--accent-color);
+}
+
+.btn-refresh:active .icon {
+  transform: rotate(180deg);
+  transition: transform 0.3s;
+}
+
+/* Recovery */
+.recovery-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  height: calc(100vh - 200px);
+}
+
+.recovery-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tool-card {
+  padding: 1.5rem;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tool-info h3 { margin-bottom: 0.3rem; color: var(--accent-color); }
+.tool-info p { font-size: 0.8rem; opacity: 0.7; }
+
+.tool-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px;
+}
+
+.recovery-console {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}
+
+.console-header {
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-clear {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.console-output {
+  flex: 1;
+  padding: 1rem;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: #a3e635;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.btn-warning {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  background: var(--warning-color);
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* About Section */
+.about-container {
+  padding: 3rem;
+  border-radius: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-content h3 {
+  font-size: 1.8rem;
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+}
+
+.features-list {
+  margin: 2rem 0;
+}
+
+.features-list ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.features-list li {
+  margin-bottom: 0.8rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.features-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.author-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.signature-big {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  background: linear-gradient(to right, #ffffff, var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0.5rem 0;
+}
+
+.role-desc {
+  font-size: 0.9rem;
+  opacity: 0.6;
+  letter-spacing: 1px;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 500px;
+  padding: 2.5rem;
+  border-radius: 24px;
+  text-align: center;
+}
+
+.confirm-details {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.password-field {
+  margin: 1.5rem 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.password-field label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.8rem;
+  border-radius: 8px;
+  color: white;
+  width: 100%;
+  outline: none;
+}
+
+.glass-input:focus {
+  border-color: var(--accent-color);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn-secondary {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.btn-danger {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  background: var(--danger-color);
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.danger-text { color: var(--danger-color); font-weight: bold; margin-top: 1rem; }
+.warning-text { color: var(--warning-color); font-size: 0.8rem; margin-top: 0.5rem; }
+
+.root-warning {
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  color: var(--warning-color);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stat-card, .disk-card, .health-card {
+  animation: fadeIn 0.4s ease-out backwards;
+}
+
+.clickable {
+  cursor: pointer !important;
+  transition: all 0.2s;
+}
+
+.clickable:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: scale(1.02);
+}
+
+.error-text {
+  color: var(--danger-color);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* Erasmo Cardoso - Software Engineer | Electronics Technician */

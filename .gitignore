@@ -1,0 +1,31 @@
+
+# Go
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+go.work
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.svelte-kit/
+frontend/.env*
+
+# Wails
+build/bin/
+build/windows/icon.ico
+build/windows/info.plist
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
