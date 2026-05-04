@@ -52,10 +52,9 @@ parts:
       - npm
       - libgtk-3-dev
       - libwebkit2gtk-4.1-dev
-
-  external-tools:
-    plugin: nil
     stage-packages:
       - testdisk
       - e2fsprogs
       - smartmontools
+      - libwebkit2gtk-4.1-0
+      - libgtk-3-0
