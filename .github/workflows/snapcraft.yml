@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,7 +26,11 @@ jobs:
           export PATH=$PATH:$(go env GOPATH)/bin
 
       - name: Build Snap
-        uses: snapcore/action-build@v1
+        run: |
+          sudo snap install snapcraft --classic
+          # Força o build no host para evitar erros de rede do LXD
+          sudo snapcraft pack --destructive-mode
+          echo "snap=$(ls *.snap | head -n 1)" >> $GITHUB_OUTPUT
         id: build
 
       - name: Upload Snap Artifact
