@@ -9,7 +9,7 @@ import (
 	"runtime"
 )
 
-//go:embed bin/*
+//go:embed all:bin
 var embeddedTools embed.FS
 
 type Manager struct {
