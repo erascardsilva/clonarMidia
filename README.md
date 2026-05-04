@@ -51,5 +51,5 @@ snapcraft
 
 ---
 
-**Erasmo Cardoso**
+**Erasmo Cardoso**<br>
 Software Engineer | Electronics Technician
