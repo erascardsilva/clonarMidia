@@ -31,29 +31,33 @@ parts:
     plugin: nil
     source: .
     override-build: |
-      # Instala o Wails no ambiente isolado do Snapcraft
+      # Instala Go 1.23 (golang-go do apt é incompatível com Wails v2.12+)
+      curl -sL https://go.dev/dl/go1.23.0.linux-amd64.tar.gz | tar -C /usr/local -xz
+      export PATH=$PATH:/usr/local/go/bin
       export GOPATH=/root/go
       export PATH=$PATH:$GOPATH/bin
+
+      # Instala o Wails
       go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
       # Build do Frontend
       cd frontend && npm install && npm run build
       cd ..
 
-      # Build do Wails
-      wails build -o clonarmidia
-      
-      # Instalação dos binários conforme padrão
+      # Build do Wails (gera binário em build/bin/)
+      wails build
+
+      # Cópia dos binários conforme padrão
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      cp clonarmidia $SNAPCRAFT_PART_INSTALL/bin/
-      
-      # Blindagem dos assets de GUI conforme regras do Erasmo
+      cp build/bin/clonarmidia $SNAPCRAFT_PART_INSTALL/bin/
+
+      # Cópia manual de assets de GUI conforme padrão Erasmo
       mkdir -p $SNAPCRAFT_PART_INSTALL/gui
       cp snap/gui/*.png $SNAPCRAFT_PART_INSTALL/gui/
       cp snap/gui/*.desktop $SNAPCRAFT_PART_INSTALL/gui/
 
     build-packages:
-      - golang-go
+      - curl
       - npm
       - libgtk-3-dev
       - libwebkit2gtk-4.1-dev
