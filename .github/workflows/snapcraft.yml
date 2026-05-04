@@ -23,13 +23,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev npm
           go install github.com/wailsapp/wails/v2/cmd/wails@latest
-          export PATH=$PATH:$(go env GOPATH)/bin
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Build Snap
         run: |
           sudo snap install snapcraft --classic
-          # Força o build no host para evitar erros de rede do LXD
-          sudo snapcraft pack --destructive-mode
+          # O sudo -E preserva o PATH configurado para que o comando wails seja encontrado
+          sudo -E snapcraft pack --destructive-mode
           echo "snap=$(ls *.snap | head -n 1)" >> $GITHUB_OUTPUT
         id: build
 
