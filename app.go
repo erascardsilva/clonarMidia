@@ -41,65 +41,26 @@ func (a *App) GetDisks() ([]disk.Info, error) {
 	return a.diskService.GetDisks()
 }
 
-// StartClone inicia o processo de clonagem usando ferramentas externas com privilégios
+// StartClone inicia o processo de clonagem usando o motor nativo Go
 func (a *App) StartClone(opts disk.CloneOptions, password string) string {
 	go func() {
-		bs := fmt.Sprintf("%d", opts.BufferSize)
-		if opts.BufferSize <= 0 {
-			bs = "64M"
-		}
+		progressChan := make(chan disk.Progress, 10)
 
-		// Usamos sudo -S para injetar a senha via entrada padrão
-		cmd := exec.Command("sudo", "-S", "dd", 
-			fmt.Sprintf("if=%s", opts.Source), 
-			fmt.Sprintf("of=%s", opts.Destination), 
-			fmt.Sprintf("bs=%s", bs),
-			"status=progress",
-			"conv=fsync",
-		)
-
-		stdin, err := cmd.StdinPipe()
-		if err != nil {
-			runtime.EventsEmit(a.ctx, "clone_error", "Falha ao criar pipe de entrada: "+err.Error())
-			return
-		}
-
-		stderr, err := cmd.StderrPipe()
-		if err != nil {
-			runtime.EventsEmit(a.ctx, "clone_error", "Falha ao iniciar pipe: "+err.Error())
-			return
-		}
-
-		if err := cmd.Start(); err != nil {
-			runtime.EventsEmit(a.ctx, "clone_error", "Falha ao disparar comando: "+err.Error())
-			return
-		}
-
-		// Injeta a senha no stdin
-		fmt.Fprintln(stdin, password)
-		stdin.Close()
-
-		// Goroutine para parsear o progresso do dd
+		// Goroutine para repassar progresso ao frontend via eventos Wails
 		go func() {
-			buf := make([]byte, 1024)
-			for {
-				n, err := stderr.Read(buf)
-				if n > 0 {
-					output := string(buf[:n])
-					runtime.EventsEmit(a.ctx, "clone_log", output)
-				}
-				if err != nil {
-					break
-				}
+			for p := range progressChan {
+				runtime.EventsEmit(a.ctx, "clone_progress", p)
 			}
 		}()
 
-		err = cmd.Wait()
+		err := a.diskService.Clone(a.ctx, opts, progressChan)
+		close(progressChan)
+
 		if err != nil {
-			runtime.EventsEmit(a.ctx, "clone_error", "Clonagem interrompida ou falhou: "+err.Error())
+			runtime.EventsEmit(a.ctx, "clone_error", "Clonagem falhou: "+err.Error())
 			return
 		}
-		
+
 		runtime.EventsEmit(a.ctx, "clone_complete", "Sucesso")
 	}()
 

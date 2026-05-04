@@ -11,6 +11,8 @@ import (
 	"io"
 	"os"
 	"time"
+
+	"clonarmidia/pkg/udisks"
 )
 
 // Progress representa o estado atual da clonagem
@@ -28,31 +30,69 @@ type CloneOptions struct {
 	BufferSize  int    `json:"bufferSize"` // em Bytes
 }
 
+// isSnapEnvironment verifica se o app está rodando dentro de um container Snap
+func isSnapEnvironment() bool {
+	return os.Getenv("SNAP") != ""
+}
+
+// openSource abre o dispositivo de origem pelo método adequado ao ambiente
+func openSource(path string) (*os.File, func(), error) {
+	if isSnapEnvironment() {
+		client, err := udisks.NewClient()
+		if err != nil {
+			return nil, nil, fmt.Errorf("falha ao conectar ao UDisks2: %w", err)
+		}
+		f, err := client.OpenForRead(path)
+		if err != nil {
+			client.Close()
+			return nil, nil, fmt.Errorf("UDisks2 falhou ao abrir origem: %w", err)
+		}
+		return f, func() { f.Close(); client.Close() }, nil
+	}
+	f, err := os.OpenFile(path, os.O_RDONLY, 0)
+	if err != nil {
+		return nil, nil, fmt.Errorf("falha ao abrir origem: %w", err)
+	}
+	return f, func() { f.Close() }, nil
+}
+
+// openDest abre o dispositivo de destino pelo método adequado ao ambiente
+func openDest(path string) (*os.File, func(), error) {
+	if isSnapEnvironment() {
+		client, err := udisks.NewClient()
+		if err != nil {
+			return nil, nil, fmt.Errorf("falha ao conectar ao UDisks2: %w", err)
+		}
+		f, err := client.OpenForWrite(path)
+		if err != nil {
+			client.Close()
+			return nil, nil, fmt.Errorf("UDisks2 falhou ao abrir destino: %w", err)
+		}
+		return f, func() { f.Close(); client.Close() }, nil
+	}
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return nil, nil, fmt.Errorf("falha ao abrir destino: %w", err)
+	}
+	return f, func() { f.Close() }, nil
+}
+
 // Clone realiza a cópia bruta de um dispositivo para outro
 func (s *Service) Clone(ctx context.Context, opts CloneOptions, progressChan chan<- Progress) error {
-	src, err := os.OpenFile(opts.Source, os.O_RDONLY, 0)
+	src, closeSrc, err := openSource(opts.Source)
 	if err != nil {
-		return fmt.Errorf("falha ao abrir origem: %w", err)
+		return err
 	}
-	defer src.Close()
+	defer closeSrc()
 
-	// Obtendo o tamanho total para progresso
-	srcInfo, err := src.Stat()
-	var totalSize uint64
-	if err == nil && srcInfo.Size() > 0 {
-		totalSize = uint64(srcInfo.Size())
-	} else {
-		// Alguns arquivos de dispositivo não retornam Stat() comum, tentaremos buscar via seek
-		pos, _ := src.Seek(0, io.SeekEnd)
-		totalSize = uint64(pos)
-		src.Seek(0, io.SeekStart)
-	}
+	totalSize, _ := src.Seek(0, io.SeekEnd)
+	src.Seek(0, io.SeekStart)
 
-	dst, err := os.OpenFile(opts.Destination, os.O_WRONLY|os.O_CREATE, 0666)
+	dst, closeDst, err := openDest(opts.Destination)
 	if err != nil {
-		return fmt.Errorf("falha ao abrir destino: %w", err)
+		return err
 	}
-	defer dst.Close()
+	defer closeDst()
 
 	if opts.BufferSize <= 0 {
 		opts.BufferSize = 1024 * 1024 // Default 1MB
@@ -76,7 +116,6 @@ func (s *Service) Clone(ctx context.Context, opts CloneOptions, progressChan cha
 				}
 				bytesCopied += uint64(n)
 
-				// Envia progresso a cada 100ms ou se terminar para não sobrecarregar o canal
 				if time.Since(lastUpdate) >= 100*time.Millisecond || err == io.EOF {
 					if progressChan != nil {
 						elapsed := time.Since(startTime).Seconds()
@@ -84,10 +123,9 @@ func (s *Service) Clone(ctx context.Context, opts CloneOptions, progressChan cha
 						if elapsed > 0 {
 							speed = float64(bytesCopied) / elapsed
 						}
-
 						p := Progress{
 							BytesCopied: bytesCopied,
-							TotalBytes:  totalSize,
+							TotalBytes:  uint64(totalSize),
 							Speed:       speed,
 						}
 						if totalSize > 0 {

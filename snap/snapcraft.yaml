@@ -17,11 +17,9 @@ apps:
     command: bin/clonarmidia
     extensions: [gnome]
     plugs:
-      - block-devices
       - hardware-observe
       - mount-observe
       - udisks2
-      - raw-usb
       - home
       - network
       - network-bind
