@@ -6,6 +6,7 @@
   import { onMount } from 'svelte';
   import { GetDisks, StartClone, IsRoot, ScanPartitions, RecoverFiles, RepairFS, ElevatePrivileges } from '../wailsjs/go/main/App.js';
   import { EventsOn } from '../wailsjs/runtime/runtime.js';
+  import { t, locale } from './i18n.js';
 
   let disks = [];
   let currentView = 'dashboard'; // 'dashboard', 'ver', 'analisar', 'recuperar', 'clonar', 'config', 'sobre'
@@ -41,12 +42,12 @@
     EventsOn("clone_log", (log) => { console.log(log); });
     EventsOn("clone_complete", (msg) => {
       cloning = false;
-      statusMessage = "Concluído com sucesso!";
+      statusMessage = $t('clone.success');
       refreshDisks();
     });
     EventsOn("clone_error", (err) => {
       cloning = false;
-      statusMessage = "Erro: " + err;
+      statusMessage = $t('table.health') + ": " + err;
     });
 
     // Listeners de Recuperação
@@ -115,7 +116,7 @@
   async function startCloning() {
     if (!sourceDisk || !targetDisk) return;
     if (sourceDisk.path === targetDisk.path) {
-      statusMessage = "Origem e destino não podem ser iguais!";
+      statusMessage = $t('clone.error_same');
       return;
     }
     showConfirmModal = true;
@@ -123,12 +124,12 @@
 
   async function confirmCloning() {
     if (!rootPassword) {
-      statusMessage = "Senha de root é necessária!";
+      statusMessage = $t('modal.error_pass');
       return;
     }
     showConfirmModal = false;
     cloning = true;
-    statusMessage = "Iniciando clonagem...";
+    statusMessage = $t('clone.starting');
     await StartClone({
       source: sourceDisk.path,
       destination: targetDisk.path,
@@ -146,7 +147,7 @@
       rootPassElevate = "";
       await refreshDisks();
     } else {
-      elevateError = "Senha incorreta ou erro na elevação.";
+      elevateError = $t('modal.error_elevate');
     }
   }
 
@@ -168,44 +169,53 @@
   <!-- Sidebar -->
   <aside class="sidebar glass">
     <div class="logo-area">
-      <h1 class="gradient-text">Clonar Mídia</h1>
-      <p class="signature">Erasmo Cardoso</p>
+      <h1 class="gradient-text">{$t('app.title')}</h1>
+      <p class="signature">{$t('app.signature')}</p>
     </div>
 
     <nav>
       <button class:active={currentView === 'dashboard'} on:click={() => currentView = 'dashboard'}>
-        <span class="icon">🏠</span> Dashboard
+        <span class="icon">🏠</span> {$t('nav.dashboard')}
       </button>
       <button class:active={currentView === 'clonar'} on:click={() => currentView = 'clonar'}>
-        <span class="icon">🔄</span> Clonar Disco
+        <span class="icon">🔄</span> {$t('nav.clone_disk')}
       </button>
       <button class:active={currentView === 'clonar_particao'} on:click={() => currentView = 'clonar_particao'}>
-        <span class="icon">🧩</span> Clonar Partição
+        <span class="icon">🧩</span> {$t('nav.clone_partition')}
       </button>
       <button class:active={currentView === 'ver'} on:click={() => currentView = 'ver'}>
-        <span class="icon">📊</span> Ver Partições
+        <span class="icon">📊</span> {$t('nav.view_partitions')}
       </button>
       <button class:active={currentView === 'analisar'} on:click={() => currentView = 'analisar'}>
-        <span class="icon">🔍</span> Analisar Saúde
+        <span class="icon">🔍</span> {$t('nav.analyze_health')}
       </button>
       <button class:active={currentView === 'recuperar'} on:click={() => currentView = 'recuperar'}>
-        <span class="icon">🛠️</span> Recuperar
+        <span class="icon">🛠️</span> {$t('nav.recover')}
       </button>
       <div class="spacer"></div>
       
       <button class="btn-refresh" on:click={refreshDisks}>
-        <span class="icon">🔄</span> Atualizar Discos
+        <span class="icon">🔄</span> {$t('nav.refresh')}
       </button>
 
       <button class:active={currentView === 'config'} on:click={() => currentView = 'config'}>
-        <span class="icon">⚙️</span> Configurações
+        <span class="icon">⚙️</span> {$t('nav.settings')}
       </button>
       <button class:active={currentView === 'sobre'} on:click={() => currentView = 'sobre'}>
-        <span class="icon">ℹ️</span> Sobre
+        <span class="icon">ℹ️</span> {$t('nav.about')}
       </button>
+
+      <div class="lang-selector-sidebar">
+        <span class="icon">🌐</span>
+        <select bind:value={$locale} class="glass-select-mini">
+          <option value="pt">PT-BR</option>
+          <option value="en">EN-US</option>
+        </select>
+      </div>
+
       {#if !isRoot}
         <div class="root-warning glass clickable" on:click={() => showElevateModal = true}>
-          ⚠️ Modo Somente Leitura (Sem Root)
+          {$t('nav.read_only')}
         </div>
       {/if}
     </nav>
@@ -215,37 +225,37 @@
   <main class="content">
     {#if currentView === 'dashboard'}
       <header>
-        <h2>Bem-vindo, Erasmo</h2>
-        <p>Visão geral dos seus dispositivos de armazenamento.</p>
+        <h2>{$t('dashboard.welcome')}</h2>
+        <p>{$t('dashboard.overview')}</p>
       </header>
 
       <div class="stats-grid">
         <div class="stat-card glass">
-          <span class="stat-label">Discos Detectados</span>
+          <span class="stat-label">{$t('dashboard.disks_detected')}</span>
           <span class="stat-value">{disks.length}</span>
         </div>
         <div class="stat-card glass">
-          <span class="stat-label">Capacidade Total</span>
+          <span class="stat-label">{$t('dashboard.total_capacity')}</span>
           <span class="stat-value">{formatSize(disks.reduce((acc, d) => acc + d.size, 0))}</span>
         </div>
         <div class="stat-card glass">
-          <span class="stat-label">Status do Sistema</span>
+          <span class="stat-label">{$t('dashboard.system_status')}</span>
           <span class="stat-value" class:text-success={isRoot} class:text-warning={!isRoot}>
-            {isRoot ? 'Pronto' : 'Limitado'}
+            {isRoot ? $t('dashboard.status_ready') : $t('dashboard.status_limited')}
           </span>
         </div>
       </div>
 
       <section class="recent-disks">
-        <h3>Dispositivos Conectados</h3>
+        <h3>{$t('dashboard.connected_devices')}</h3>
         <div class="disk-table glass">
           <table>
             <thead>
               <tr>
-                <th>Modelo</th>
-                <th>Caminho</th>
-                <th>Tamanho</th>
-                <th>Saúde</th>
+                <th>{$t('table.model')}</th>
+                <th>{$t('table.path')}</th>
+                <th>{$t('table.size')}</th>
+                <th>{$t('table.health')}</th>
               </tr>
             </thead>
             <tbody>
@@ -254,7 +264,7 @@
                   <td><strong>{disk.model || 'Desconhecido'}</strong></td>
                   <td><code>{disk.path}</code></td>
                   <td>{formatSize(disk.size)}</td>
-                  <td><span class="badge success">Saudável</span></td>
+                  <td><span class="badge success">{$t('table.healthy')}</span></td>
                 </tr>
               {/each}
             </tbody>
@@ -263,8 +273,8 @@
       </section>
     {:else if currentView === 'clonar'}
       <header>
-        <h2>Clonagem Bit-a-Bit</h2>
-        <p>Arraste os discos para as zonas de origem e destino.</p>
+        <h2>{$t('clone.title')}</h2>
+        <p>{$t('clone.subtitle')}</p>
       </header>
 
       <section class="clone-zones">
@@ -276,14 +286,14 @@
           on:dragleave={handleDragLeave}
           on:drop={(e) => handleDrop(e, 'source')}
         >
-          <h3>Origem</h3>
+          <h3>{$t('clone.source')}</h3>
           {#if sourceDisk}
             <div class="disk-card mini">
               <strong>{sourceDisk.model || sourceDisk.name}</strong>
               <span>{formatSize(sourceDisk.size)}</span>
             </div>
           {:else}
-            <div class="placeholder">Solte aqui o disco de ORIGEM</div>
+            <div class="placeholder">{$t('clone.drop_source')}</div>
           {/if}
         </div>
 
@@ -297,14 +307,14 @@
           on:dragleave={handleDragLeave}
           on:drop={(e) => handleDrop(e, 'target')}
         >
-          <h3>Destino</h3>
+          <h3>{$t('clone.target')}</h3>
           {#if targetDisk}
             <div class="disk-card mini">
               <strong>{targetDisk.model || targetDisk.name}</strong>
               <span>{formatSize(targetDisk.size)}</span>
             </div>
           {:else}
-            <div class="placeholder">Solte aqui o disco de DESTINO</div>
+            <div class="placeholder">{$t('clone.drop_target')}</div>
           {/if}
         </div>
       </section>
@@ -312,7 +322,7 @@
       {#if cloning}
         <section class="progress-area glass">
           <div class="progress-header">
-            <span>Progresso: {progress.percentage.toFixed(2)}%</span>
+            <span>{$t('clone.progress')}: {progress.percentage.toFixed(2)}%</span>
             <span>{formatSpeed(progress.speed)}</span>
           </div>
           <div class="progress-bar-bg">
@@ -326,14 +336,14 @@
       {:else}
         <div class="actions">
           <button class="btn-primary" disabled={!sourceDisk || !targetDisk} on:click={startCloning}>
-            Iniciar Clonagem
+            {$t('clone.start')}
           </button>
           <p class="status">{statusMessage}</p>
         </div>
       {/if}
 
       <section class="disk-list">
-        <h3>Discos Disponíveis</h3>
+        <h3>{$t('clone.available')}</h3>
         <div class="grid">
           {#each disks as disk}
             <div 
@@ -353,8 +363,8 @@
       </section>
     {:else if currentView === 'clonar_particao'}
       <header>
-        <h2>Clonagem de Partição</h2>
-        <p>Arraste as partições para as zonas de origem e destino.</p>
+        <h2>{$t('partition.title')}</h2>
+        <p>{$t('partition.subtitle')}</p>
       </header>
 
       <section class="clone-zones">
@@ -366,14 +376,14 @@
           on:dragleave={handleDragLeave}
           on:drop={(e) => handleDrop(e, 'source')}
         >
-          <h3>Origem (Partição)</h3>
+          <h3>{$t('clone.source')} ({$t('nav.clone_partition')})</h3>
           {#if sourceDisk}
             <div class="disk-card mini">
               <strong>{sourceDisk.name}</strong>
               <span>{sourceDisk.fstype || 'raw'} - {formatSize(sourceDisk.size)}</span>
             </div>
           {:else}
-            <div class="placeholder">Solte aqui a partição de ORIGEM</div>
+            <div class="placeholder">{$t('partition.drop_source')}</div>
           {/if}
         </div>
 
@@ -387,14 +397,14 @@
           on:dragleave={handleDragLeave}
           on:drop={(e) => handleDrop(e, 'target')}
         >
-          <h3>Destino (Partição)</h3>
+          <h3>{$t('clone.target')} ({$t('nav.clone_partition')})</h3>
           {#if targetDisk}
             <div class="disk-card mini">
               <strong>{targetDisk.name}</strong>
               <span>{targetDisk.fstype || 'raw'} - {formatSize(targetDisk.size)}</span>
             </div>
           {:else}
-            <div class="placeholder">Solte aqui a partição de DESTINO</div>
+            <div class="placeholder">{$t('partition.drop_target')}</div>
           {/if}
         </div>
       </section>
@@ -403,7 +413,7 @@
         <!-- Mesma área de progresso -->
         <section class="progress-area glass">
           <div class="progress-header">
-            <span>Progresso: {progress.percentage.toFixed(2)}%</span>
+            <span>{$t('clone.progress')}: {progress.percentage.toFixed(2)}%</span>
             <span>{formatSpeed(progress.speed)}</span>
           </div>
           <div class="progress-bar-bg">
@@ -417,14 +427,14 @@
       {:else}
         <div class="actions">
           <button class="btn-primary" disabled={!sourceDisk || !targetDisk} on:click={startCloning}>
-            Iniciar Clonagem de Partição
+            {$t('partition.start')}
           </button>
           <p class="status">{statusMessage}</p>
         </div>
       {/if}
 
       <section class="disk-list">
-        <h3>Partições Disponíveis</h3>
+        <h3>{$t('partition.available')}</h3>
         <div class="grid">
           {#each disks as disk}
             {#each disk.partitions || [] as part}
@@ -447,8 +457,8 @@
 
     {:else if currentView === 'ver'}
       <header>
-        <h2>Visualizador de Partições</h2>
-        <p>Selecione um disco para ver sua estrutura interna.</p>
+        <h2>{$t('view.title')}</h2>
+        <p>{$t('view.subtitle')}</p>
       </header>
 
       <div class="partition-layout">
@@ -484,15 +494,15 @@
               </div>
             </div>
           {:else}
-            <div class="placeholder">Selecione um disco à esquerda</div>
+            <div class="placeholder">{$t('view.select_disk')}</div>
           {/if}
         </section>
       </div>
 
     {:else if currentView === 'analisar'}
       <header>
-        <h2>Análise de Saúde (S.M.A.R.T.)</h2>
-        <p>Monitoramento preventivo contra falhas de hardware.</p>
+        <h2>{$t('health.title')}</h2>
+        <p>{$t('health.subtitle')}</p>
       </header>
 
       <div class="health-grid">
@@ -503,9 +513,9 @@
               <span class="badge success">OK</span>
             </div>
             <div class="health-stats">
-              <div class="h-stat"><span>Temperatura:</span> <strong>32°C</strong></div>
-              <div class="h-stat"><span>Horas Ligado:</span> <strong>1,240h</strong></div>
-              <div class="h-stat"><span>Setores Realo.:</span> <strong>0</strong></div>
+              <div class="h-stat"><span>{$t('health.temp')}:</span> <strong>32°C</strong></div>
+              <div class="h-stat"><span>{$t('health.hours')}:</span> <strong>1,240h</strong></div>
+              <div class="h-stat"><span>{$t('health.reallocated')}:</span> <strong>0</strong></div>
             </div>
           </div>
         {/each}
@@ -513,8 +523,8 @@
 
     {:else if currentView === 'recuperar'}
       <header>
-        <h2>Recuperação de Dados e Reparo</h2>
-        <p>Ferramentas profissionais para situações críticas.</p>
+        <h2>{$t('recover.title')}</h2>
+        <p>{$t('recover.subtitle')}</p>
       </header>
 
       <div class="recovery-container">
@@ -522,17 +532,17 @@
           <div class="tool-card glass">
             <div class="tool-info">
               <h3>🔍 TestDisk</h3>
-              <p>Busca por partições deletadas ou tabelas corrompidas.</p>
+              <p>{$t('recover.testdisk_desc')}</p>
             </div>
             <div class="tool-actions">
               <select bind:value={selectedDiskPath}>
-                <option value="">Selecione o Disco</option>
+                <option value="">{$t('recover.select_disk')}</option>
                 {#each disks as disk}
                   <option value={disk.path}>{disk.model || disk.name} ({disk.path})</option>
                 {/each}
               </select>
               <button class="btn-primary" on:click={handleScanPartitions} disabled={!selectedDiskPath}>
-                Escanear Partições
+                {$t('recover.scan')}
               </button>
             </div>
           </div>
@@ -540,11 +550,11 @@
           <div class="tool-card glass">
             <div class="tool-info">
               <h3>📷 PhotoRec</h3>
-              <p>Extração profunda de arquivos por assinatura (Carving).</p>
+              <p>{$t('recover.photorec_desc')}</p>
             </div>
             <div class="tool-actions">
               <button class="btn-primary" on:click={handleRecoverFiles} disabled={!selectedDiskPath}>
-                Extrair Arquivos
+                {$t('recover.extract')}
               </button>
             </div>
           </div>
@@ -552,11 +562,11 @@
           <div class="tool-card glass">
             <div class="tool-info">
               <h3>🛠️ FSCK</h3>
-              <p>Reparo automático de erros no sistema de arquivos.</p>
+              <p>{$t('recover.fsck_desc')}</p>
             </div>
             <div class="tool-actions">
               <button class="btn-warning" on:click={handleRepairFS} disabled={!selectedDiskPath}>
-                Reparar Erros
+                {$t('recover.repair')}
               </button>
             </div>
           </div>
@@ -564,52 +574,49 @@
 
         <section class="recovery-console glass">
           <div class="console-header">
-            <span>Console de Saída</span>
-            <button class="btn-clear" on:click={() => recoveryLog = ""}>Limpar</button>
+            <span>{$t('recover.console')}</span>
+            <button class="btn-clear" on:click={() => recoveryLog = ""}>{$t('recover.clear')}</button>
           </div>
-          <pre class="console-output">{recoveryLog || "Aguardando ação..."}</pre>
+          <pre class="console-output">{recoveryLog || $t('recover.waiting')}</pre>
         </section>
       </div>
 
     {:else if currentView === 'config'}
         <section class="settings glass">
-            <h2>Configurações de Velocidade</h2>
+            <h2>{$t('settings.speed')}</h2>
             <div class="field">
-                <label>Tamanho do Buffer (Block Size):</label>
+                <label>{$t('settings.buffer_size')}</label>
                 <select bind:value={settings.bufferSize}>
-                    <option value={1024 * 1024 * 10}>Pendrive (10MB)</option>
-                    <option value={1024 * 1024 * 64}>HD Padrão (64MB)</option>
-                    <option value={1024 * 1024 * 512}>SSD / NVMe (512MB)</option>
+                    <option value={1024 * 1024 * 10}>{$t('settings.pendrive')}</option>
+                    <option value={1024 * 1024 * 64}>{$t('settings.hdd')}</option>
+                    <option value={1024 * 1024 * 512}>{$t('settings.ssd')}</option>
                 </select>
             </div>
         </section>
     {:else if currentView === 'sobre'}
       <header>
-        <h2>Sobre o Projeto</h2>
-        <p>Informações técnicas e autoria.</p>
+        <h2>{$t('about.title')}</h2>
+        <p>{$t('about.subtitle')}</p>
       </header>
 
       <section class="about-container glass">
         <div class="about-content">
-          <h3>Clonar Mídia Desktop</h3>
-          <p>
-            O <strong>Clonar Mídia</strong> é uma ferramenta profissional desenvolvida para automação de processos 
-            de clonagem bit-a-bit, recuperação de dados deletados e reparo de sistemas de arquivos corrompidos.
-          </p>
+          <h3>{$t('app.title')}</h3>
+          <p>{$t('about.desc')}</p>
           
           <div class="features-list">
-            <h4>Funcionalidades Principais:</h4>
+            <h4>{$t('about.features')}</h4>
             <ul>
-              <li><strong>Clonagem de Baixo Nível:</strong> Cópia idêntica setor por setor usando o motor `dd`.</li>
-              <li><strong>Recuperação Forense:</strong> Integração com TestDisk e PhotoRec para recuperação de partições e arquivos.</li>
-              <li><strong>Manutenção de Discos:</strong> Reparo de sistemas de arquivos via FSCK e análise de saúde S.M.A.R.T.</li>
-              <li><strong>Segurança:</strong> Elevação de privilégios controlada e proteção contra sobrescrita acidental.</li>
+              <li>{$t('about.feature1')}</li>
+              <li>{$t('about.feature2')}</li>
+              <li>{$t('about.feature3')}</li>
+              <li>{$t('about.feature4')}</li>
             </ul>
           </div>
 
           <div class="author-section">
-            <h4>Desenvolvido por:</h4>
-            <p class="signature-big">Erasmo Cardoso</p>
+            <h4>{$t('about.author')}</h4>
+            <p class="signature-big">{$t('app.signature')}</p>
             <p class="role-desc">Software Engineer | Electronics Technician</p>
           </div>
         </div>
@@ -626,28 +633,28 @@
 {#if showConfirmModal}
   <div class="modal-overlay">
     <div class="modal-content glass">
-      <h3>⚠️ ATENÇÃO: Ação Destrutiva</h3>
-      <p>Você está prestes a clonar:</p>
+      <h3>{$t('modal.confirm_title')}</h3>
+      <p>{$t('modal.confirm_msg')}</p>
       <div class="confirm-details">
-        <div class="conf-item"><strong>DE:</strong> {sourceDisk.model || sourceDisk.name} ({sourceDisk.path})</div>
-        <div class="conf-item"><strong>PARA:</strong> {targetDisk.model || targetDisk.name} ({targetDisk.path})</div>
+        <div class="conf-item"><strong>{$t('modal.from')}</strong> {sourceDisk.model || sourceDisk.name} ({sourceDisk.path})</div>
+        <div class="conf-item"><strong>{$t('modal.to')}</strong> {targetDisk.model || targetDisk.name} ({targetDisk.path})</div>
       </div>
       
       <div class="password-field">
-        <label for="root-pass">Senha de Root:</label>
+        <label for="root-pass">{$t('modal.root_pass')}</label>
         <input 
           id="root-pass"
           type="password" 
           bind:value={rootPassword} 
-          placeholder="Digite a senha de root"
+          placeholder={$t('modal.root_placeholder')}
           class="glass-input"
         />
       </div>
 
-      <p class="danger-text">Todos os dados no destino serão PERDIDOS permanentemente.</p>
+      <p class="danger-text">{$t('modal.danger')}</p>
       <div class="modal-actions">
-        <button class="btn-secondary" on:click={() => showConfirmModal = false}>Cancelar</button>
-        <button class="btn-danger" on:click={confirmCloning}>Confirmar e Iniciar</button>
+        <button class="btn-secondary" on:click={() => showConfirmModal = false}>{$t('modal.cancel')}</button>
+        <button class="btn-danger" on:click={confirmCloning}>{$t('modal.confirm_btn')}</button>
       </div>
     </div>
   </div>
@@ -656,16 +663,16 @@
 {#if showElevateModal}
   <div class="modal-overlay">
     <div class="modal-content glass">
-      <h3>🔒 Elevação de Privilégios</h3>
-      <p>Digite a senha de root para liberar todas as funções.</p>
+      <h3>{$t('modal.elevate_title')}</h3>
+      <p>{$t('modal.elevate_msg')}</p>
       
       <div class="password-field">
-        <label for="elevate-pass">Senha de Root:</label>
+        <label for="elevate-pass">{$t('modal.root_pass')}</label>
         <input 
           id="elevate-pass"
           type="password" 
           bind:value={rootPassElevate} 
-          placeholder="Senha de administrador"
+          placeholder={$t('modal.root_placeholder')}
           class="glass-input"
         />
         {#if elevateError}
@@ -674,8 +681,8 @@
       </div>
 
       <div class="modal-actions">
-        <button class="btn-secondary" on:click={() => { showElevateModal = false; elevateError = ""; }}>Cancelar</button>
-        <button class="btn-primary" on:click={handleElevate}>Elevar para Root</button>
+        <button class="btn-secondary" on:click={() => { showElevateModal = false; elevateError = ""; }}>{$t('modal.cancel')}</button>
+        <button class="btn-primary" on:click={handleElevate}>{$t('modal.elevate_btn')}</button>
       </div>
     </div>
   </div>
@@ -734,6 +741,30 @@
   }
 
   .spacer { flex-grow: 1; }
+
+  .lang-selector-sidebar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .glass-select-mini {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .glass-select-mini option {
+    background: #1a1a2e; /* Cor escura para combinar com o tema */
+    color: white;
+  }
 
   .content {
     flex-grow: 1;

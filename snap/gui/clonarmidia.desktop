@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Clonar Midia
+Comment=Ferramenta profissional de clonagem bit-a-bit e recuperação.
+Exec=clonarmidia
+Icon=${SNAP}/meta/gui/icon.png
+Terminal=false
+Type=Application
+Categories=System;Utility;
+StartupWMClass=clonarmidia
+
