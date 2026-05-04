@@ -31,10 +31,15 @@ parts:
     plugin: nil
     source: .
     override-build: |
+      # Instala o Wails no ambiente isolado do Snapcraft
+      export GOPATH=/root/go
+      export PATH=$PATH:$GOPATH/bin
+      go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
       # Build do Frontend
       cd frontend && npm install && npm run build
       cd ..
-      
+
       # Build do Wails
       wails build -o clonarmidia
       
