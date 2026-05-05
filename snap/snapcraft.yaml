@@ -10,6 +10,8 @@ confinement: strict
 grade: stable
 title: Clonar Mídia
 license: MIT
+
+donation: https://github.com/sponsors/erascardsilva
 contact: https://github.com/erascardsilva/clonarMidia/issues
 website: https://github.com/erascardsilva/clonarMidia
 source-code: https://github.com/erascardsilva/clonarMidia
@@ -17,7 +19,7 @@ issues: https://github.com/erascardsilva/clonarMidia/issues
 
 apps:
   clonarmidia:
-    command: $SNAP/build/bin/clonarmidia
+    command: $SNAP/bin/clonarmidia
     extensions: [gnome]
     environment:
       LIBGL_ALWAYS_SOFTWARE: "1"
@@ -30,6 +32,22 @@ apps:
       - wayland
       - x11
       - removable-media
+
+# ...
+    override-build: |
+      export GOPATH=$HOME/go
+      export PATH=$HOME/go/bin:/usr/local/bin:$PATH
+      
+      # Instala a CLI do Wails com a versão de Go do snap
+      go install github.com/wailsapp/wails/v2/cmd/wails@latest
+      
+      # Build da aplicação (frontend + backend)
+      wails build -clean
+      
+      # Copia o binário para o diretório padrão do snap
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      cp build/bin/clonarmidia $SNAPCRAFT_PART_INSTALL/bin/
+
 
 parts:
   clonarmidia:
@@ -61,5 +79,5 @@ parts:
       wails build -clean
       
       # Copia o binário para o diretório do snap
-      mkdir -p $SNAPCRAFT_PART_INSTALL/build/bin
-      cp build/bin/clonarmidia $SNAPCRAFT_PART_INSTALL/build/bin/
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      cp build/bin/clonarmidia $SNAPCRAFT_PART_INSTALL/bin/
