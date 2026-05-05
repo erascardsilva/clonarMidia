@@ -13,45 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Wails Dependencies
+      - name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libcanberra-gtk3-module npm
-          go install github.com/wailsapp/wails/v2/cmd/wails@latest
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+          # Go e Node são instalados via build-snaps no snapcraft.yaml, 
+          # mas precisamos deles para a CLI do Wails durante o build-time se necessário.
 
-      - name: Copiar snapcraft.yaml para a raiz
+      - name: Prepare snapcraft.yaml
         run: cp snap/snapcraft.yaml ./snapcraft.yaml
-        # Garantir que o snapcraft encontre a definição correta
 
       - name: Build Snap
-        env:
-          LIBGL_ALWAYS_SOFTWARE: "1"
-          WEBKIT_DISABLE_COMPOSITING_MODE: "1"
-          WEBKIT_DISABLE_DMABUF_RENDERER: "1"
-        run: |
-          sudo snap install snapcraft --classic
-          # O sudo -E preserva o PATH configurado para que o comando wails seja encontrado
-          sudo -E snapcraft pack --destructive-mode
-          echo "snap=$(ls *.snap | head -n 1)" >> $GITHUB_OUTPUT
+        uses: snapcore/action-build@v1
         id: build
 
-
-      - name: Fix snapcraft log permissions
-        run: sudo chown -R runner:runner /home/runner/.local/state/snapcraft || true
-
-      - name: Upload Snap Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: clonarmidia-snap
-          path: ${{ steps.build.outputs.snap }}
-
-      - name: Publish to Snap Store
+      - name: Publish Snap
         uses: snapcore/action-publish@v1
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
