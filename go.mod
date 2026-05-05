@@ -36,4 +36,4 @@ require (
 	golang.org/x/text v0.22.0 // indirect
 )
 
-// replace github.com/wailsapp/wails/v2 v2.11.0 => /home/erasmo/go/pkg/mod
+// require github.com/wailsapp/wails/v2 v2.12.0 => /home/erasmo/go/pkg/mod
