@@ -25,13 +25,22 @@ jobs:
           go install github.com/wailsapp/wails/v2/cmd/wails@latest
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
+      - name: Copiar snapcraft.yaml para a raiz
+        run: cp snap/snapcraft.yaml ./snapcraft.yaml
+        # Garantir que o snapcraft encontre a definição correta
+
       - name: Build Snap
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          WEBKIT_DISABLE_COMPOSITING_MODE: "1"
+          WEBKIT_DISABLE_DMABUF_RENDERER: "1"
         run: |
           sudo snap install snapcraft --classic
           # O sudo -E preserva o PATH configurado para que o comando wails seja encontrado
           sudo -E snapcraft pack --destructive-mode
           echo "snap=$(ls *.snap | head -n 1)" >> $GITHUB_OUTPUT
         id: build
+
 
       - name: Fix snapcraft log permissions
         run: sudo chown -R runner:runner /home/runner/.local/state/snapcraft || true

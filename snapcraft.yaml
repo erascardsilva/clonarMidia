@@ -1,0 +1,33 @@
+name: clonarmidia
+base: core22
+grade: stable
+confinement: strict
+
+parts:
+  app:
+    plugin: go
+    source: .
+    build-packages:
+      - libgtk-3-dev
+      - libwebkit2gtk-4.1-dev
+    stage-packages:
+      - libgtk-3-0
+      - libwebkit2gtk-4.1-0
+      - libgl1-mesa-glx
+      - libegl1-mesa
+      - libgbm1
+
+apps:
+  clonarmidia:
+    command: $SNAP/bin/clonarmidia
+    plugs:
+      - desktop
+      - desktop-legacy
+      - x11
+      - wayland
+      - opengl
+      - network
+    environment:
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      WEBKIT_DISABLE_COMPOSITING_MODE: "1"
+      WEBKIT_DISABLE_DMABUF_RENDERER: "1"
