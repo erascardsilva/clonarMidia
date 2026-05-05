@@ -39,6 +39,11 @@
     snapStatus = await GetSnapStatus();
     await refreshDisks();
     
+    // Se não for snap, mostramos boas vindas da versão completa
+    if (!snapStatus.isSnap) {
+       console.log("Full version activated");
+    }
+
     // Listeners de Clonagem
     EventsOn("clone_progress", (p) => { progress = p; });
     EventsOn("clone_log", (log) => { console.log(log); });
@@ -78,7 +83,6 @@
   async function refreshDisks() {
     try {
       disks = await GetDisks();
-      // Se estiver no Snap e não houver discos, provavelmente falta permissão
       if (snapStatus.isSnap && disks.length === 0) {
         snapStatus = await GetSnapStatus();
       }
@@ -157,10 +161,8 @@
     }
   }
 
-  function copySnapCommand() {
-    const cmd = "sudo snap connect clonarmidia:block-devices && sudo snap connect clonarmidia:udisks2 && sudo snap connect clonarmidia:hardware-observe && sudo snap connect clonarmidia:mount-observe && sudo snap connect clonarmidia:system-observe";
-    navigator.clipboard.writeText(cmd);
-    alert("Comando copiado! Cole no terminal e pressione Enter.");
+  function openFullVersion() {
+    BrowserOpenURL("https://github.com/erascardsilva/clonarMidia/releases");
   }
 
   function formatSize(bytes) {
@@ -250,15 +252,19 @@
       </header>
 
       {#if snapStatus.isSnap && !snapStatus.hasBlockAccess}
-        <div class="snap-alert glass animate-fade-in">
+        <div class="snap-alert glass animate-fade-in demo-mode">
           <div class="alert-content">
-            <span class="alert-icon">⚠️</span>
+            <span class="alert-icon">🎁</span>
             <div class="alert-text">
-              <h4>Acesso ao Hardware Limitado</h4>
-              <p>Por segurança do Linux (Snap), o acesso aos discos físicos está bloqueado. Copie o comando abaixo, cole no seu terminal e aperte Enter para liberar.</p>
+              <h4>Versão Demo (Snap Store)</h4>
+              <p>Esta versão possui restrições de segurança do Linux. Para clonagem profissional com acesso total ao hardware, instale a <strong>Versão Completa</strong>.</p>
             </div>
-            <button class="btn-copy-snap" on:click={copySnapCommand}>Copiar Comando</button>
+            <button class="btn-full-version" on:click={openFullVersion}>Baixar Versão Completa</button>
           </div>
+        </div>
+      {:else if !snapStatus.isSnap}
+        <div class="full-version-toast glass animate-fade-in">
+            🚀 <strong>Versão Completa Ativada:</strong> Acesso total ao hardware habilitado.
         </div>
       {/if}
 
@@ -273,8 +279,8 @@
         </div>
         <div class="stat-card glass">
           <span class="stat-label">{$t('dashboard.system_status')}</span>
-          <span class="stat-value" class:text-success={isRoot && snapStatus.hasBlockAccess} class:text-warning={!isRoot || !snapStatus.hasBlockAccess}>
-            {(isRoot && snapStatus.hasBlockAccess) ? $t('dashboard.status_ready') : $t('dashboard.status_limited')}
+          <span class="stat-value" class:text-success={!snapStatus.isSnap || snapStatus.hasBlockAccess} class:text-warning={snapStatus.isSnap && !snapStatus.hasBlockAccess}>
+            {(!snapStatus.isSnap || snapStatus.hasBlockAccess) ? "Ativado" : "Demo"}
           </span>
         </div>
       </div>
@@ -302,7 +308,7 @@
               {:else}
                 <tr>
                   <td colspan="4" style="text-align: center; padding: 2rem; opacity: 0.5;">
-                    Nenhum disco físico detectado. Verifique as permissões do sistema.
+                    Nenhum disco detectado. Verifique as permissões.
                   </td>
                 </tr>
               {/each}
@@ -311,6 +317,7 @@
         </div>
       </section>
     {:else if currentView === 'clonar'}
+      <!-- ... resto do conteúdo mantido igual ... -->
       <header>
         <h2>{$t('clone.title')}</h2>
         <p>{$t('clone.subtitle')}</p>
@@ -449,7 +456,6 @@
       </section>
 
       {#if cloning}
-        <!-- Mesma área de progresso -->
         <section class="progress-area glass">
           <div class="progress-header">
             <span>{$t('clone.progress')}: {progress.percentage.toFixed(2)}%</span>
@@ -825,10 +831,13 @@
 
   header { margin-bottom: 2rem; }
 
-  /* Snap Alert Styles */
+  /* Demo Mode Alert */
+  .demo-mode {
+    background: rgba(56, 189, 248, 0.1) !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  }
+
   .snap-alert {
-    background: rgba(234, 179, 8, 0.1);
-    border: 1px solid rgba(234, 179, 8, 0.3);
     padding: 1.5rem;
     border-radius: 12px;
     margin-bottom: 2rem;
@@ -846,7 +855,7 @@
 
   .alert-text h4 {
     margin: 0;
-    color: #eab308;
+    color: var(--accent-color);
     font-size: 1.1rem;
   }
 
@@ -856,9 +865,9 @@
     opacity: 0.8;
   }
 
-  .btn-copy-snap {
-    background: #eab308;
-    color: #000;
+  .btn-full-version {
+    background: var(--accent-color);
+    color: #fff;
     border: none;
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
@@ -868,8 +877,21 @@
     transition: transform 0.1s;
   }
 
-  .btn-copy-snap:active {
+  .btn-full-version:active {
     transform: scale(0.95);
+  }
+
+  /* Toast Full Version */
+  .full-version-toast {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    color: #10b981;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .animate-fade-in {

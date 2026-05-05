@@ -2,9 +2,11 @@
 
 A professional low-level tool for bit-by-bit disk cloning, forensic data recovery, and file system repair. Developed as a cross-platform desktop application using the Wails framework.
 
+![App Screenshot](https://raw.githubusercontent.com/erascardsilva/clonarMidia/master/screenshot.png)
+
 ## Overview
 
-Clone Media is designed for system administrators, electronics technicians, and forensic analysts who require absolute precision in data duplication and recovery. It provides a high-level graphical interface for complex terminal-based utilities like `dd`, `testdisk`, and `photorec`.
+**Clone Media** is designed for system administrators, electronics technicians, and forensic analysts who require absolute precision in data duplication and recovery. It provides a high-level graphical interface for complex terminal-based utilities like `dd`, `testdisk`, and `photorec`.
 
 ## Core Features
 
@@ -14,51 +16,54 @@ Clone Media is designed for system administrators, electronics technicians, and 
 - **Hardware Monitoring**: S.M.A.R.T. health analysis and real-time disk status monitoring.
 - **Multi-Language Support**: Fully localized interface supporting English and Portuguese.
 
-## Architecture
+---
 
-The application is built with a modern decoupled architecture:
+## Installation
 
-- **Frontend**: Svelte with Vite, utilizing a reactive design system with glassmorphism aesthetics.
-- **Backend**: Go (Golang) via Wails, managing system-level calls, concurrency, and hardware events.
-- **Core Logic**: Low-level hardware interaction implemented in C++ and Go modules.
-- **Packaging**: Snapcraft (Strict Mode) for secure, sandboxed distribution on Linux systems.
+### 1. Recommended: Full Version (.deb)
+The full version provides unrestricted access to the system storage stack. This is the recommended version for professional cloning and data recovery.
 
-## How it Works
+**Download the latest .deb package from [Releases](https://github.com/erascardsilva/clonarMidia/releases)**
 
-### Disk Interaction
-The application communicates with the Linux storage stack through the `udisks2` and `block-devices` interfaces. In sandboxed environments (like Snap), it requests authorized access to raw devices to ensure maximum performance and data integrity without compromising system security.
-
-### Cloning Engine
-The cloning process utilizes a high-concurrency buffer system in Go. It performs direct reads from the source device and writes to the destination, bypassing standard file system caches to ensure an identical copy of the partition table, bootloader, and data sectors.
-
-### Privilege Elevation
-Critical operations are protected by a privilege elevation layer, ensuring that destructive actions (like overwriting a disk) require explicit administrator authorization.
-
-## Build Requirements
-
-- Go 1.18+
-- Node.js & NPM
-- Wails CLI
-- Build Essentials (gcc, g++, libgtk-3-dev, libwebkit2gtk-4.0-dev)
-
-## Deployment
-
-**Passo 1 – Compilar o frontend**
 ```bash
-cd frontend
-npm install
-npm run build   # gera ./dist
-cd ..
+sudo dpkg -i clonarmidia_1.0.0_amd64.deb
+sudo apt-get install -f  # To fix any missing dependencies
 ```
 
-**Passo 2 – Compilar a aplicação Wails**
-```bash
-wails build        # binário criado em build/bin/clonarmidia
-```
+### 2. Snap Version (Demo / Sandboxed)
+The Snap version runs in a secure sandbox. Due to Linux security policies (Strict Confinement), it may have limited access to raw hardware devices by default.
 
 [![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/clonarmidia)
 
-## Support
+### 3. Build from Source
+If you prefer to build the application yourself:
+
+**Requirements:**
+- Go 1.22+
+- Node.js 20+ & NPM
+- Wails CLI
+- Build Essentials (`libgtk-3-dev`, `libwebkit2gtk-4.1-dev`, `pkg-config`)
+
+**Build Command:**
+```bash
+# Clone the repository
+git clone https://github.com/erascardsilva/clonarMidia.git
+cd clonarMidia
+
+# Build the application
+wails build -m -tags webkit2_41 -o clonarmidia
+```
+
+---
+
+## Architecture
+
+The application is built with a modern decoupled architecture:
+- **Frontend**: Svelte with Vite, utilizing a reactive design system with glassmorphism aesthetics.
+- **Backend**: Go (Golang) via Wails, managing system-level calls, concurrency, and hardware events.
+- **Core Logic**: Low-level hardware interaction implemented in optimized Go modules.
+
+## Support & Donation
 
 If you find this tool useful, consider supporting its development:
 
@@ -66,6 +71,5 @@ If you find this tool useful, consider supporting its development:
 
 ---
 
-**Erasmo Cardoso**<br>
+**Erasmo Cardoso**  
 Software Engineer | Electronics Technician
-
