@@ -1,5 +1,5 @@
 name: clonarmidia
-base: core22
+base: core24
 version: '1.0.0'
 summary: Ferramenta de clonagem de discos e recuperação de dados
 description: |
@@ -17,6 +17,9 @@ website: https://github.com/erascardsilva/clonarMidia
 source-code: https://github.com/erascardsilva/clonarMidia
 issues: https://github.com/erascardsilva/clonarMidia/issues
 
+platforms:
+  amd64:
+
 apps:
   clonarmidia:
     command: bin/clonarmidia
@@ -32,36 +35,32 @@ apps:
       - wayland
       - x11
       - removable-media
+      - desktop
+      - desktop-legacy
 
 parts:
   clonarmidia:
     plugin: nil
     source: .
-    build-packages:
-      - libgtk-3-dev
-      - libwebkit2gtk-4.1-dev
-      - pkg-config
     build-snaps:
       - go/1.22/stable
       - node/20/stable
-    stage-packages:
-      - libgtk-3-0
-      - libwebkit2gtk-4.1-0
-      - libgl1-mesa-glx
-      - libgl1-mesa-dri
-      - libegl1-mesa
-      - libgbm1
-      - mesa-utils
+    build-packages:
+      - build-essential
+      - libgtk-3-dev
+      - libwebkit2gtk-4.1-dev
+      - pkg-config
     override-build: |
-      export GOPATH=$HOME/go
-      export PATH=$HOME/go/bin:/usr/local/bin:$PATH
-
-      # Instala a CLI do Wails com a versão de Go do snap
+      # Instala a CLI do Wails
       go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
-      # Build da aplicação (frontend + backend)
-      wails build -clean
+      # Instala dependências do frontend
+      npm install --prefix frontend
 
-      # Copia o binário para o diretório padrão do snap
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      cp build/bin/clonarmidia $SNAPCRAFT_PART_INSTALL/bin/
+      # Build da aplicação via Wails
+      # Usamos os mesmos flags do padrão agenteIA
+      $HOME/go/bin/wails build -m -tags webkit2_41 -nsis=false -upx=false -trimpath -o clonarmidia
+
+      # Organiza o binário final
+      mkdir -p $CRAFT_PART_INSTALL/bin
+      cp build/bin/clonarmidia $CRAFT_PART_INSTALL/bin/
