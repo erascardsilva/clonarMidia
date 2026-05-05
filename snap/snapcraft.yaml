@@ -23,6 +23,9 @@ apps:
       - home
       - network
       - network-bind
+      - opengl
+      - removable-media
+      - block-devices
 
 parts:
   clonarmidia:
@@ -65,4 +68,6 @@ parts:
       - smartmontools
       - libwebkit2gtk-4.1-0
       - libgtk-3-0
-      - libcanberra-gtk3-module   # módulo GTK 3 compatível, corrige o erro de carregamento
+      - libcanberra-gtk3-module
+      - libgl1-mesa-dri
+      - libegl1
