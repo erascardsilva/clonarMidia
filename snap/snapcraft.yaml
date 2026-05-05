@@ -1,4 +1,5 @@
 name: clonarmidia
+title: Clonar Mídia
 base: core24
 version: '1.0.0'
 summary: Ferramenta de clonagem de discos e recuperação de dados
