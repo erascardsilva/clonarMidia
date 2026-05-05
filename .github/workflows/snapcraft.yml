@@ -31,8 +31,10 @@ jobs:
       - name: Install Wails CLI
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
-      - name: Install Snapcraft
-        run: sudo snap install snapcraft --classic
+      - name: Install Snapcraft and Base
+        run: |
+          sudo snap install snapcraft --classic
+          sudo snap install core22
 
       - name: Prepare snapcraft.yaml
         run: cp snap/snapcraft.yaml ./snapcraft.yaml
@@ -40,7 +42,8 @@ jobs:
       - name: Build Snap
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
-          snapcraft --destructive-mode
+          # Força o uso do binário Go/Node instalados pelo Action em vez de tentar baixar snaps
+          snapcraft pack --destructive-mode
 
       - name: Identify Snap file
         id: snap_info
