@@ -12,10 +12,17 @@ grade: stable
 confinement: strict
 icon: snap/gui/clonarmidia.png
 
+layout:
+  /usr/lib/x86_64-linux-gnu/dri:
+    bind: $SNAP/usr/lib/x86_64-linux-gnu/dri
+
+
 apps:
   clonarmidia:
     command: bin/clonarmidia
     extensions: [gnome]
+    environment:
+      GTK_PATH: $SNAP/usr/lib/x86_64-linux-gnu/gtk-3.0
     plugs:
       - hardware-observe
       - mount-observe
@@ -69,3 +76,4 @@ parts:
       - libcanberra-gtk3-module
       - libgl1-mesa-dri
       - libegl1
+      - libegl-mesa0
