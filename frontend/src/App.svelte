@@ -4,7 +4,7 @@
   Criado por Erasmo Cardoso - Software Engineer | Electronics Technician
   */
   import { onMount } from 'svelte';
-  import { GetDisks, StartClone, IsRoot, ScanPartitions, RecoverFiles, RepairFS, ElevatePrivileges } from '../wailsjs/go/main/App.js';
+  import { GetDisks, StartClone, IsRoot, ScanPartitions, RecoverFiles, RepairFS, ElevatePrivileges, GetSnapStatus } from '../wailsjs/go/main/App.js';
   import { EventsOn, BrowserOpenURL } from '../wailsjs/runtime/runtime.js';
   import { t, locale } from './i18n.js';
 
@@ -19,6 +19,7 @@
   let progress = { bytesCopied: 0, totalBytes: 0, percentage: 0, speed: 0 };
   let statusMessage = "";
   let isRoot = true;
+  let snapStatus = { isSnap: false, hasBlockAccess: true };
 
   // Elevação
   let showElevateModal = false;
@@ -35,6 +36,7 @@
 
   onMount(async () => {
     isRoot = await IsRoot();
+    snapStatus = await GetSnapStatus();
     await refreshDisks();
     
     // Listeners de Clonagem
@@ -76,6 +78,10 @@
   async function refreshDisks() {
     try {
       disks = await GetDisks();
+      // Se estiver no Snap e não houver discos, provavelmente falta permissão
+      if (snapStatus.isSnap && disks.length === 0) {
+        snapStatus = await GetSnapStatus();
+      }
     } catch (e) {
       console.error(e);
     }
@@ -149,6 +155,12 @@
     } else {
       elevateError = $t('modal.error_elevate');
     }
+  }
+
+  function copySnapCommand() {
+    const cmd = "sudo snap connect clonarmidia:block-devices && sudo snap connect clonarmidia:udisks2 && sudo snap connect clonarmidia:hardware-observe && sudo snap connect clonarmidia:mount-observe && sudo snap connect clonarmidia:system-observe";
+    navigator.clipboard.writeText(cmd);
+    alert("Comando copiado! Cole no terminal e pressione Enter.");
   }
 
   function formatSize(bytes) {
@@ -237,6 +249,19 @@
         <p>{$t('dashboard.overview')}</p>
       </header>
 
+      {#if snapStatus.isSnap && !snapStatus.hasBlockAccess}
+        <div class="snap-alert glass animate-fade-in">
+          <div class="alert-content">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-text">
+              <h4>Acesso ao Hardware Limitado</h4>
+              <p>Por segurança do Linux (Snap), o acesso aos discos físicos está bloqueado. Copie o comando abaixo, cole no seu terminal e aperte Enter para liberar.</p>
+            </div>
+            <button class="btn-copy-snap" on:click={copySnapCommand}>Copiar Comando</button>
+          </div>
+        </div>
+      {/if}
+
       <div class="stats-grid">
         <div class="stat-card glass">
           <span class="stat-label">{$t('dashboard.disks_detected')}</span>
@@ -248,8 +273,8 @@
         </div>
         <div class="stat-card glass">
           <span class="stat-label">{$t('dashboard.system_status')}</span>
-          <span class="stat-value" class:text-success={isRoot} class:text-warning={!isRoot}>
-            {isRoot ? $t('dashboard.status_ready') : $t('dashboard.status_limited')}
+          <span class="stat-value" class:text-success={isRoot && snapStatus.hasBlockAccess} class:text-warning={!isRoot || !snapStatus.hasBlockAccess}>
+            {(isRoot && snapStatus.hasBlockAccess) ? $t('dashboard.status_ready') : $t('dashboard.status_limited')}
           </span>
         </div>
       </div>
@@ -273,6 +298,12 @@
                   <td><code>{disk.path}</code></td>
                   <td>{formatSize(disk.size)}</td>
                   <td><span class="badge success">{$t('table.healthy')}</span></td>
+                </tr>
+              {:else}
+                <tr>
+                  <td colspan="4" style="text-align: center; padding: 2rem; opacity: 0.5;">
+                    Nenhum disco físico detectado. Verifique as permissões do sistema.
+                  </td>
                 </tr>
               {/each}
             </tbody>
@@ -794,6 +825,123 @@
 
   header { margin-bottom: 2rem; }
 
+  /* Snap Alert Styles */
+  .snap-alert {
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .alert-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .alert-icon {
+    font-size: 2rem;
+  }
+
+  .alert-text h4 {
+    margin: 0;
+    color: #eab308;
+    font-size: 1.1rem;
+  }
+
+  .alert-text p {
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .btn-copy-snap {
+    background: #eab308;
+    color: #000;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.1s;
+  }
+
+  .btn-copy-snap:active {
+    transform: scale(0.95);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .stats-grid {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    flex: 1;
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+  }
+
+  .text-success { color: #10b981; }
+  .text-warning { color: #f59e0b; }
+
+  .disk-table {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  th, td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  th {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    text-transform: uppercase;
+  }
+
+  .badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+  }
+
+  .badge.success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+
   .clone-zones {
     display: flex;
     align-items: center;
@@ -803,7 +951,7 @@
 
   .zone {
     flex: 1;
-    height: 120px;
+    min-height: 150px;
     border: 2px dashed rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     display: flex;
@@ -811,83 +959,96 @@
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.3s;
   }
 
-  .arrow { font-size: 2rem; opacity: 0.3; }
+  .zone.active {
+    border-color: var(--accent-color);
+    background: rgba(56, 189, 248, 0.05);
+  }
 
-  .disk-list .grid {
+  .placeholder {
+    opacity: 0.4;
+    font-size: 0.9rem;
+  }
+
+  .disk-card.mini {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
+    gap: 1.5rem;
   }
 
   .disk-card {
-    padding: 1rem;
+    padding: 1.5rem;
     border-radius: 12px;
     display: flex;
-    gap: 1rem;
     align-items: center;
+    gap: 1rem;
     cursor: grab;
-    transition: transform 0.2s;
   }
-
-  .disk-card:active { cursor: grabbing; }
-  .disk-card:hover { transform: translateY(-2px); }
 
   .disk-icon { font-size: 2rem; }
-  .disk-info { display: flex; flex-direction: column; gap: 0.2rem; }
-  .disk-info code { font-size: 0.7rem; color: var(--accent-color); }
-
-  .mini {
-    background: var(--accent-color);
-    color: var(--bg-color);
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 6px;
-    text-align: center;
-  }
-
-  .btn-primary {
-    background: var(--accent-color);
-    color: var(--bg-color);
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-
-  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+  .disk-info { display: flex; flex-direction: column; }
+  .disk-info code { font-size: 0.8rem; opacity: 0.6; }
 
   .progress-area {
-    padding: 1.5rem;
+    padding: 2rem;
     border-radius: 12px;
     margin-bottom: 2rem;
   }
 
   .progress-bar-bg {
-    height: 12px;
+    height: 10px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    margin: 1rem 0;
+    border-radius: 5px;
     overflow: hidden;
+    margin: 1rem 0;
   }
 
   .progress-bar-fill {
     height: 100%;
-    background: var(--accent-color);
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
     transition: width 0.3s;
   }
 
-  .status { margin-top: 1rem; font-size: 0.9rem; font-weight: bold; }
-
-  .settings { padding: 2rem; border-radius: 12px; }
-  .field { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
-  .zone.active {
-    border-color: var(--accent-color);
-    background: rgba(56, 189, 248, 0.1);
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
   }
+
+  .modal-content {
+    width: 450px;
+    padding: 2rem;
+    border-radius: 16px;
+  }
+
+  .glass-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.8rem;
+    border-radius: 8px;
+    color: white;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary { background: var(--accent-color); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
+  .btn-danger { background: #ef4444; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
+  .btn-secondary { background: rgba(255, 255, 255, 0.1); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; }
 </style>

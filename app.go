@@ -17,6 +17,12 @@ type App struct {
 	toolsManager *tools.Manager
 }
 
+// SnapStatus contém informações sobre o confinamento da aplicação
+type SnapStatus struct {
+	IsSnap         bool `json:"isSnap"`
+	HasBlockAccess bool `json:"hasBlockAccess"`
+}
+
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{
@@ -29,6 +35,36 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	_ = a.toolsManager.Init()
+}
+
+// GetSnapStatus verifica se a aplicação está rodando via Snap e se tem acesso aos discos
+func (a *App) GetSnapStatus() SnapStatus {
+	isSnap := os.Getenv("SNAP") != ""
+	hasAccess := true
+
+	if isSnap {
+		// No Snap, se não houver conexão com 'block-devices', /dev/sda ou nvme0n1 estarão inacessíveis
+		files, err := os.ReadDir("/dev")
+		if err == nil {
+			found := false
+			for _, f := range files {
+				name := f.Name()
+				// Procura por padrões comuns de discos físicos (sdX ou nvmeXnX)
+				if (len(name) >= 3 && name[:2] == "sd") || (len(name) >= 4 && name[:4] == "nvme") {
+					found = true
+					break
+				}
+			}
+			hasAccess = found
+		} else {
+			hasAccess = false
+		}
+	}
+
+	return SnapStatus{
+		IsSnap:         isSnap,
+		HasBlockAccess: hasAccess,
+	}
 }
 
 // IsRoot verifica se a aplicação está rodando com privilégios de root
@@ -46,7 +82,6 @@ func (a *App) StartClone(opts disk.CloneOptions, password string) string {
 	go func() {
 		progressChan := make(chan disk.Progress, 10)
 
-		// Goroutine para repassar progresso ao frontend via eventos Wails
 		go func() {
 			for p := range progressChan {
 				runtime.EventsEmit(a.ctx, "clone_progress", p)
@@ -70,7 +105,6 @@ func (a *App) StartClone(opts disk.CloneOptions, password string) string {
 // ScanPartitions realiza uma busca por partições perdidas usando o TestDisk
 func (a *App) ScanPartitions(device string) string {
 	go func() {
-		// testdisk /cmd /dev/sdX analyze,search
 		cmd := a.toolsManager.RunWithPrivileges("testdisk", "/cmd", device, "analyze,search")
 		
 		output, err := cmd.CombinedOutput()
@@ -86,10 +120,8 @@ func (a *App) ScanPartitions(device string) string {
 // RecoverFiles inicia a extração de arquivos usando o PhotoRec
 func (a *App) RecoverFiles(device string, outputDir string) string {
 	go func() {
-		// photorec /d [output] /cmd [device] options...
 		cmd := a.toolsManager.RunWithPrivileges("photorec", "/d", outputDir, "/cmd", device, "search")
 		
-		// O photorec emite muito log, capturaremos o progresso básico
 		stdout, _ := cmd.StdoutPipe()
 		_ = cmd.Start()
 		
@@ -112,7 +144,6 @@ func (a *App) RecoverFiles(device string, outputDir string) string {
 // RepairFS tenta reparar um sistema de arquivos usando fsck
 func (a *App) RepairFS(device string) string {
 	go func() {
-		// fsck -y /dev/sdX
 		cmd := a.toolsManager.RunWithPrivileges("fsck", "-y", device)
 		
 		output, err := cmd.CombinedOutput()
@@ -127,7 +158,6 @@ func (a *App) RepairFS(device string) string {
 
 // ElevatePrivileges tenta validar a senha de root para mudar o estado da aplicação
 func (a *App) ElevatePrivileges(password string) bool {
-	// Tenta executar um comando simples com sudo -S
 	cmd := exec.Command("sudo", "-S", "true")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {

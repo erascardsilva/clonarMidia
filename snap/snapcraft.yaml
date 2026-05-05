@@ -37,6 +37,11 @@ apps:
       - removable-media
       - desktop
       - desktop-legacy
+      - block-devices
+      - hardware-observe
+      - mount-observe
+      - system-observe
+      - udisks2
 
 parts:
   clonarmidia:
