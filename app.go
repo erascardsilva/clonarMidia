@@ -39,26 +39,25 @@ func (a *App) startup(ctx context.Context) {
 
 // GetSnapStatus verifica se a aplicação está rodando via Snap e se tem acesso aos discos
 func (a *App) GetSnapStatus() SnapStatus {
-	isSnap := os.Getenv("SNAP") != ""
+	// Verificação robusta de ambiente Snap
+	isSnap := os.Getenv("SNAP") != "" || os.Getenv("SNAP_NAME") != ""
 	hasAccess := true
 
 	if isSnap {
-		// No Snap, se não houver conexão com 'block-devices', /dev/sda ou nvme0n1 estarão inacessíveis
-		files, err := os.ReadDir("/dev")
-		if err == nil {
-			found := false
-			for _, f := range files {
-				name := f.Name()
-				// Procura por padrões comuns de discos físicos (sdX ou nvmeXnX)
-				if (len(name) >= 3 && name[:2] == "sd") || (len(name) >= 4 && name[:4] == "nvme") {
-					found = true
-					break
-				}
+		// Tentativa real de ler o primeiro setor de um disco comum.
+		// No sandbox estrito sem 'block-devices', isso SEMPRE falhará.
+		devicesToTest := []string{"/dev/sda", "/dev/nvme0n1", "/dev/sdb"}
+		accessible := false
+		
+		for _, dev := range devicesToTest {
+			f, err := os.Open(dev)
+			if err == nil {
+				f.Close()
+				accessible = true
+				break
 			}
-			hasAccess = found
-		} else {
-			hasAccess = false
 		}
+		hasAccess = accessible
 	}
 
 	return SnapStatus{
