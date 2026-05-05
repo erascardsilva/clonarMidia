@@ -24,8 +24,6 @@ apps:
       - network
       - network-bind
       - opengl
-      - removable-media
-      - block-devices
 
 parts:
   clonarmidia:
