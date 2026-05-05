@@ -43,13 +43,29 @@ Critical operations are protected by a privilege elevation layer, ensuring that 
 
 ## Deployment
 
-To build the Snap package in strict mode:
-
+**Passo 1 – Compilar o frontend**
 ```bash
-snapcraft
+cd frontend
+npm install
+npm run build   # gera ./dist
+cd ..
 ```
+
+**Passo 2 – Compilar a aplicação Wails**
+```bash
+wails build        # binário criado em build/bin/clonarmidia
+```
+
+[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/clonarmidia)
+
+## Support
+
+If you find this tool useful, consider supporting its development:
+
+[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/ncp/payment/8V6WQCGN6HDCQ)
 
 ---
 
 **Erasmo Cardoso**<br>
 Software Engineer | Electronics Technician
+
