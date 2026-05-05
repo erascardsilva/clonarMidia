@@ -162,7 +162,7 @@
   }
 
   function openFullVersion() {
-    BrowserOpenURL("https://github.com/erascardsilva/clonarMidia/releases");
+    BrowserOpenURL("https://github.com/erascardsilva/clonarMidia/tree/main/build/bin");
   }
 
   function formatSize(bytes) {
@@ -317,7 +317,6 @@
         </div>
       </section>
     {:else if currentView === 'clonar'}
-      <!-- ... resto do conteúdo mantido igual ... -->
       <header>
         <h2>{$t('clone.title')}</h2>
         <p>{$t('clone.subtitle')}</p>
