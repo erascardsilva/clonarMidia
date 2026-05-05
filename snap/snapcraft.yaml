@@ -2,11 +2,12 @@ name: clonarmidia
 title: Clonar Mídia
 base: core24
 version: '1.0.0'
-summary: Ferramenta de clonagem de discos e recuperação de dados
+summary: Ferramenta de clonagem de discos e recuperação de dados (Versão Demo)
 description: |
-  Aplicativo desktop que permite clonar discos, partições, recuperar arquivos
-  com TestDisk/PhotoRec e analisar a saúde S.M.A.R.T. desenvolvido por
-  Erasmo Cardoso - Software Engineer | Electronics Technician.
+  Versão de demonstração do Clonar Mídia. Esta versão roda em um sandbox seguro.
+  Para acesso total ao hardware e clonagem profissional, utilize a versão completa
+  disponível no repositório oficial.
+  Desenvolvido por Erasmo Cardoso - Software Engineer | Electronics Technician.
 icon: snap/gui/clonarmidia.png
 contact: https://github.com/erascardsilva/clonarMidia/issues
 issues: https://github.com/erascardsilva/clonarMidia/issues
@@ -38,11 +39,6 @@ apps:
       - removable-media
       - desktop
       - desktop-legacy
-      - block-devices
-      - hardware-observe
-      - mount-observe
-      - system-observe
-      - udisks2
 
 parts:
   clonarmidia:
