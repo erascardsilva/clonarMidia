@@ -1,79 +1,65 @@
 name: clonarmidia
 base: core22
 version: '1.0.0'
-title: ClonarMidia
-summary: Clonagem bit-a-bit e recuperação de dados profissional.
+summary: Ferramenta de clonagem de discos e recuperação de dados
 description: |
-  O Clonar Mídia é uma ferramenta de baixo nível desenvolvida por Erasmo Cardoso 
-  para processos de clonagem forense, recuperação de arquivos deletados e 
-  reparo de sistemas de arquivos corrompidos.
-
-grade: stable
+  Aplicativo desktop que permite clonar discos, partições, recuperar arquivos
+  com TestDisk/PhotoRec e analisar a saúde S.M.A.R.T. desenvolvido por
+  Erasmo Cardoso - Software Engineer | Electronics Technician.
 confinement: strict
-icon: snap/gui/clonarmidia.png
-
-layout:
-  /usr/lib/x86_64-linux-gnu/dri:
-    bind: $SNAP/usr/lib/x86_64-linux-gnu/dri
-
+grade: stable
+title: Clonar Mídia
+license: MIT
+contact: https://github.com/erascardsilva/clonarMidia/issues
+website: https://github.com/erascardsilva/clonarMidia
+source-code: https://github.com/erascardsilva/clonarMidia
+issues: https://github.com/erascardsilva/clonarMidia/issues
 
 apps:
   clonarmidia:
-    command: bin/clonarmidia
+    command: $SNAP/build/bin/clonarmidia
     extensions: [gnome]
     environment:
-      GTK_PATH: $SNAP/usr/lib/x86_64-linux-gnu/gtk-3.0
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      WEBKIT_DISABLE_COMPOSITING_MODE: "1"
+      WEBKIT_DISABLE_DMABUF_RENDERER: "1"
     plugs:
-      - hardware-observe
-      - mount-observe
-      - udisks2
       - home
       - network
-      - network-bind
       - opengl
+      - wayland
+      - x11
+      - removable-media
 
 parts:
   clonarmidia:
     plugin: nil
     source: .
-    override-build: |
-      # Instala Go 1.23 (golang-go do apt é incompatível com Wails v2.12+)
-      curl -sL https://go.dev/dl/go1.23.0.linux-amd64.tar.gz | tar -C /usr/local -xz
-      export PATH=$PATH:/usr/local/go/bin
-      export GOPATH=/root/go
-      export PATH=$PATH:$GOPATH/bin
-
-      # Instala o Wails
-      go install github.com/wailsapp/wails/v2/cmd/wails@latest
-
-      # Build do Frontend
-      cd frontend && npm install && npm run build
-      cd ..
-
-      # Build do Wails (gera binário em build/bin/)
-      wails build
-
-      # Cópia dos binários conforme padrão
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      cp build/bin/clonarmidia $SNAPCRAFT_PART_INSTALL/bin/
-
-      # Cópia manual de assets de GUI conforme padrão Erasmo
-      mkdir -p $SNAPCRAFT_PART_INSTALL/gui
-      cp snap/gui/*.png $SNAPCRAFT_PART_INSTALL/gui/
-      cp snap/gui/*.desktop $SNAPCRAFT_PART_INSTALL/gui/
-
     build-packages:
-      - curl
-      - npm
       - libgtk-3-dev
       - libwebkit2gtk-4.1-dev
+      - pkg-config
+    build-snaps:
+      - go/1.22/stable
+      - node/20/stable
     stage-packages:
-      - testdisk
-      - e2fsprogs
-      - smartmontools
-      - libwebkit2gtk-4.1-0
       - libgtk-3-0
-      - libcanberra-gtk3-module
+      - libwebkit2gtk-4.1-0
+      - libgl1-mesa-glx
       - libgl1-mesa-dri
-      - libegl1
-      - libegl-mesa0
+      - libegl1-mesa
+      - libgbm1
+      - mesa-utils
+    override-build: |
+      export GOPATH=$HOME/go
+      export PATH=$HOME/go/bin:/usr/local/bin:$PATH
+      
+      # Instala a CLI do Wails com a versão de Go do snap
+      go install github.com/wailsapp/wails/v2/cmd/wails@latest
+      
+      # Build da aplicação (frontend + backend)
+      wails build -clean
+      
+      # Copia o binário para o diretório do snap
+      mkdir -p $SNAPCRAFT_PART_INSTALL/build/bin
+      cp build/bin/clonarmidia $SNAPCRAFT_PART_INSTALL/build/bin/
