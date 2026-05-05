@@ -67,3 +67,22 @@ export namespace disk {
 
 }
 
+export namespace main {
+	
+	export class SnapStatus {
+	    isSnap: boolean;
+	    hasBlockAccess: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new SnapStatus(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.isSnap = source["isSnap"];
+	        this.hasBlockAccess = source["hasBlockAccess"];
+	    }
+	}
+
+}
+

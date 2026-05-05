@@ -10,6 +10,10 @@ export function GetDisks() {
   return window['go']['main']['App']['GetDisks']();
 }
 
+export function GetSnapStatus() {
+  return window['go']['main']['App']['GetSnapStatus']();
+}
+
 export function IsRoot() {
   return window['go']['main']['App']['IsRoot']();
 }

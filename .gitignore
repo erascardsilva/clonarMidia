@@ -1,8 +1,8 @@
 
 # Go
-bin/
-*.exe
-*.exe~
+# bin/
+# *.exe
+# *.exe~
 *.dll
 *.so
 *.dylib
@@ -15,7 +15,7 @@ frontend/.svelte-kit/
 frontend/.env*
 
 # Wails
-build/bin/
+# build/bin/
 build/windows/icon.ico
 build/windows/info.plist
 
