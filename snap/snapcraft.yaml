@@ -10,12 +10,9 @@ icon: snap/gui/clonarmidia.png
 contact: https://github.com/erascardsilva/clonarMidia/issues
 issues: https://github.com/erascardsilva/clonarMidia/issues
 license: MIT
-
 donation: https://github.com/sponsors/erascardsilva
-contact: https://github.com/erascardsilva/clonarMidia/issues
 website: https://github.com/erascardsilva/clonarMidia
 source-code: https://github.com/erascardsilva/clonarMidia
-issues: https://github.com/erascardsilva/clonarMidia/issues
 
 platforms:
   amd64:
