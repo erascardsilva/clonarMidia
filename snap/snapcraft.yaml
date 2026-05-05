@@ -65,4 +65,4 @@ parts:
       - smartmontools
       - libwebkit2gtk-4.1-0
       - libgtk-3-0
-  - libcanberra-gtk3-module   # módulo GTK 3 compatível, corrige o erro de carregamento
+      - libcanberra-gtk3-module   # módulo GTK 3 compatível, corrige o erro de carregamento
