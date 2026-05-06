@@ -1,6 +1,8 @@
 # Clonar Mídia
 
-![Clonar Mídia Banner](assets/banner.png)
+<p align="center">
+  <img src="assets/banner.png" width="600" alt="Clonar Mídia Banner">
+</p>
 
 [![Build Status](https://github.com/erascardsilva/clonarMidia/actions/workflows/snapcraft.yml/badge.svg)](https://github.com/erascardsilva/clonarMidia/actions)
 [![Snap Store](https://snapcraft.io/clonarmidia/badge.svg)](https://snapcraft.io/clonarmidia)
