@@ -264,7 +264,11 @@
         </div>
       {:else if !snapStatus.isSnap}
         <div class="full-version-toast glass animate-fade-in">
-            🚀 <strong>Versão Completa Ativada:</strong> Acesso total ao hardware habilitado.
+          <div class="toast-icon">🚀</div>
+          <div class="toast-content">
+            <strong>Versão Completa Ativada:</strong> Acesso total ao hardware habilitado.
+            <p class="toast-tip"><strong>Dica:</strong> Mantenha a versão da <strong>Snap Store</strong> instalada para receber notificações de atualizações automáticas e apoiar as métricas do projeto.</p>
+          </div>
         </div>
       {/if}
 
@@ -884,13 +888,35 @@
   .full-version-toast {
     background: rgba(16, 185, 129, 0.1);
     border: 1px solid rgba(16, 185, 129, 0.3);
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
+    padding: 1.5rem;
+    border-radius: 12px;
     margin-bottom: 2rem;
-    color: #10b981;
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    align-items: flex-start;
+    gap: 1rem;
+    color: #10b981;
+  }
+
+  .toast-icon {
+    font-size: 1.5rem;
+  }
+
+  .toast-content strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .toast-tip {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .toast-tip strong {
+    display: inline;
+    color: #10b981;
+    font-size: 0.9rem;
   }
 
   .animate-fade-in {

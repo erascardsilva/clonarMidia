@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Clonar Mídia
+Exec=clonarmidia
+Icon=clonarmidia
+Type=Application
+Categories=System;Utility;
+Comment=Disk and Partition Cloning Tool
+Terminal=false
