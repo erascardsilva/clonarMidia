@@ -1,75 +1,79 @@
-# Clone Media (Clonar Mídia)
+# Clonar Mídia
 
-A professional low-level tool for bit-by-bit disk cloning, forensic data recovery, and file system repair. Developed as a cross-platform desktop application using the Wails framework.
+![Clonar Mídia Banner](assets/banner.png)
 
-![App Screenshot](https://raw.githubusercontent.com/erascardsilva/clonarMidia/master/screenshot.png)
+[![Build Status](https://github.com/erascardsilva/clonarMidia/actions/workflows/snapcraft.yml/badge.svg)](https://github.com/erascardsilva/clonarMidia/actions)
+[![Snap Store](https://snapcraft.io/clonarmidia/badge.svg)](https://snapcraft.io/clonarmidia)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Overview
-
-**Clone Media** is designed for system administrators, electronics technicians, and forensic analysts who require absolute precision in data duplication and recovery. It provides a high-level graphical interface for complex terminal-based utilities like `dd`, `testdisk`, and `photorec`.
-
-## Core Features
-
-- **Bit-by-Bit Cloning**: Direct sector-level duplication using optimized block sizes for HDD, SSD, and NVMe devices.
-- **Forensic Recovery**: Deep file carving and partition recovery via integrated TestDisk and PhotoRec modules.
-- **File System Repair**: Automated repair of corrupted partitions using FSCK and low-level system checks.
-- **Hardware Monitoring**: S.M.A.R.T. health analysis and real-time disk status monitoring.
-- **Multi-Language Support**: Fully localized interface supporting English and Portuguese.
+**Clonar Mídia** is a professional, high-performance disk and partition cloning tool designed for Linux. Built with modern technologies, it provides a sleek interface for complex low-level hardware operations.
 
 ---
 
-## Installation
+## 🛠 Built With
 
-### 1. Recommended: Full Version (.deb)
-The full version provides unrestricted access to the system storage stack. This is the recommended version for professional cloning and data recovery.
+![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
+![Svelte](https://img.shields.io/badge/svelte-%23f1413d.svg?style=for-the-badge&logo=svelte&logoColor=white)
+![Wails](https://img.shields.io/badge/Wails-red?style=for-the-badge&logo=wails&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-**Download the latest .deb package from [Releases](https://github.com/erascardsilva/clonarMidia/releases)**
+---
 
+## 📦 Distribution Models (Important)
+
+This project follows a **Hybrid Distribution Model** to balance ease of access with unrestricted hardware performance.
+
+### 1. Demo Version (Snap Store)
+The version available on the **Snap Store** runs in a restricted "Strict" sandbox. 
+- **Security**: Fully isolated from your system.
+- **Limitation**: Due to Snap's security policies, it **cannot** directly access raw block devices (disks) for cloning.
+- **Purpose**: Ideal for exploring the UI, receiving automated update notifications, and checking project metrics.
+
+### 2. Full Version (.deb / .rpm)
+The **Native Installers** provide unrestricted hardware access.
+- **Performance**: Full raw disk access enabled.
+- **Capabilities**: All cloning and recovery features (TestDisk, PhotoRec, fsck) work at full capacity.
+- **Recommendation**: Always keep the Snap version installed for update alerts, but use the `.deb` or `.rpm` for real data operations.
+
+---
+
+## 🚀 Installation
+
+### Option A: Install Demo (Snap)
 ```bash
-sudo dpkg -i clonarmidia_1.0.0_amd64.deb
-sudo apt-get install -f  # To fix any missing dependencies
+sudo snap install clonarmidia --edge
 ```
 
-### 2. Snap Version (Demo / Sandboxed)
-The Snap version runs in a secure sandbox. Due to Linux security policies (Strict Confinement), it may have limited access to raw hardware devices by default.
+### Option B: Install Full Version (Recommended for Cloning)
+Download the latest installers directly from our build folder:
+- [**Download .deb (Ubuntu/Debian)**](https://github.com/erascardsilva/clonarMidia/raw/main/build/bin/clonarmidia_1.0.0_amd64.deb)
+- [**Download .rpm (Fedora/RedHat)**](https://github.com/erascardsilva/clonarMidia/raw/main/build/bin/clonarmidia-1.0.0-1.fc44.x86_64.rpm)
 
-[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/clonarmidia)
+---
 
-### 3. Build from Source
-If you prefer to build the application yourself:
+## 🏗 Build from Source
 
-**Requirements:**
-- Go 1.22+
-- Node.js 20+ & NPM
-- Wails CLI
-- Build Essentials (`libgtk-3-dev`, `libwebkit2gtk-4.1-dev`, `pkg-config`)
+### Prerequisites
+- **Go 1.21+**
+- **Node.js 18+**
+- **Wails CLI** (`go install github.com/wailsapp/wails/v2/cmd/wails@latest`)
+- **System Libs**: `libgtk-3-dev`, `libwebkit2gtk-4.1-dev`
 
-**Build Command:**
+### Compilation
 ```bash
-# Clone the repository
-git clone https://github.com/erascardsilva/clonarMidia.git
-cd clonarMidia
-
-# Build the application
 wails build -m -tags webkit2_41 -o clonarmidia
 ```
 
 ---
 
-## Architecture
+## ❤️ Support the Project
 
-The application is built with a modern decoupled architecture:
-- **Frontend**: Svelte with Vite, utilizing a reactive design system with glassmorphism aesthetics.
-- **Backend**: Go (Golang) via Wails, managing system-level calls, concurrency, and hardware events.
-- **Core Logic**: Low-level hardware interaction implemented in optimized Go modules.
+If this tool helped you recover data or save time, consider supporting the developer:
 
-## Support & Donation
-
-If you find this tool useful, consider supporting its development:
-
-[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/ncp/payment/8V6WQCGN6HDCQ)
+[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=for-the-badge&logo=paypal)](https://www.paypal.com/ncp/payment/8V6WQCGN6HDCQ)
 
 ---
 
 **Erasmo Cardoso**  
-Software Engineer | Electronics Technician
+*Software Engineer | Electronics Technician*
