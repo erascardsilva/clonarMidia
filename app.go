@@ -91,14 +91,14 @@ func (a *App) StartClone(opts disk.CloneOptions, password string) string {
 		close(progressChan)
 
 		if err != nil {
-			runtime.EventsEmit(a.ctx, "clone_error", "Clonagem falhou: "+err.Error())
+			runtime.EventsEmit(a.ctx, "clone_error", err.Error())
 			return
 		}
 
-		runtime.EventsEmit(a.ctx, "clone_complete", "Sucesso")
+		runtime.EventsEmit(a.ctx, "clone_complete", "common.success")
 	}()
 
-	return "Clonagem iniciada"
+	return "clone.started"
 }
 
 // ScanPartitions realiza uma busca por partições perdidas usando o TestDisk
@@ -108,12 +108,12 @@ func (a *App) ScanPartitions(device string) string {
 		
 		output, err := cmd.CombinedOutput()
 		if err != nil {
-			runtime.EventsEmit(a.ctx, "recovery_error", "Falha no Scan: "+err.Error())
+			runtime.EventsEmit(a.ctx, "recovery_error", err.Error())
 			return
 		}
 		runtime.EventsEmit(a.ctx, "recovery_result", string(output))
 	}()
-	return "Escaneamento iniciado"
+	return "common.starting"
 }
 
 // RecoverFiles inicia a extração de arquivos usando o PhotoRec
@@ -135,9 +135,9 @@ func (a *App) RecoverFiles(device string, outputDir string) string {
 			}
 		}
 		_ = cmd.Wait()
-		runtime.EventsEmit(a.ctx, "recovery_complete", "Recuperação finalizada")
+		runtime.EventsEmit(a.ctx, "recovery_complete", "recover.finished")
 	}()
-	return "Recuperação de arquivos iniciada"
+	return "common.starting"
 }
 
 // RepairFS tenta reparar um sistema de arquivos usando fsck
@@ -147,12 +147,12 @@ func (a *App) RepairFS(device string) string {
 		
 		output, err := cmd.CombinedOutput()
 		if err != nil {
-			runtime.EventsEmit(a.ctx, "recovery_error", "Falha no reparo: "+err.Error())
+			runtime.EventsEmit(a.ctx, "recovery_error", err.Error())
 			return
 		}
-		runtime.EventsEmit(a.ctx, "recovery_complete", "Reparo concluído:\n"+string(output))
+		runtime.EventsEmit(a.ctx, "recovery_complete", "recover.repair_finished"+string(output))
 	}()
-	return "Reparo de disco iniciado"
+	return "common.starting"
 }
 
 // ElevatePrivileges tenta validar a senha de root para mudar o estado da aplicação

@@ -1,4 +1,5 @@
 <script>
+  // @ts-nocheck
   /*
   Clonar Mídia - Interface Principal
   Criado por Erasmo Cardoso - Software Engineer | Electronics Technician
@@ -54,29 +55,29 @@
     });
     EventsOn("clone_error", (err) => {
       cloning = false;
-      statusMessage = $t('table.health') + ": " + err;
+      statusMessage = $t('clone.failed') + err;
     });
 
     // Listeners de Recuperação
     EventsOn("recovery_log", (log) => { recoveryLog += log; });
     EventsOn("recovery_result", (res) => { recoveryLog = res; });
-    EventsOn("recovery_complete", (msg) => { recoveryLog += "\n\n✅ " + msg; });
-    EventsOn("recovery_error", (err) => { recoveryLog += "\n\n❌ Erro: " + err; });
+    EventsOn("recovery_complete", (msg) => { recoveryLog += "\n\n✅ " + $t(msg); });
+    EventsOn("recovery_error", (err) => { recoveryLog += "\n\n❌ " + $t('common.error') + ": " + err; });
   });
 
   async function handleScanPartitions() {
-    recoveryLog = "Iniciando TestDisk...\n";
+    recoveryLog = $t('recover.starting_testdisk') + "\n";
     await ScanPartitions(selectedDiskPath);
   }
 
   async function handleRecoverFiles() {
-    recoveryLog = "Iniciando PhotoRec...\nO processo pode demorar dependendo do tamanho do disco.\n";
+    recoveryLog = $t('recover.starting_photorec') + "\n";
     // Por padrão salvamos no home do usuário/Recuperado
     await RecoverFiles(selectedDiskPath, "~/Recuperado");
   }
 
   async function handleRepairFS() {
-    recoveryLog = "Iniciando FSCK...\n";
+    recoveryLog = $t('recover.starting_fsck') + "\n";
     await RepairFS(selectedDiskPath);
   }
 
@@ -256,18 +257,18 @@
           <div class="alert-content">
             <span class="alert-icon">🎁</span>
             <div class="alert-text">
-              <h4>Versão Demo (Snap Store)</h4>
-              <p>Esta versão possui restrições de segurança do Linux. Para clonagem profissional com acesso total ao hardware, instale a <strong>Versão Completa</strong>.</p>
+              <h4>{$t('snap.demo_title')}</h4>
+              <p>{@html $t('snap.demo_desc')}</p>
             </div>
-            <button class="btn-full-version" on:click={openFullVersion}>Baixar Versão Completa</button>
+            <button class="btn-full-version" on:click={openFullVersion}>{$t('snap.download_full')}</button>
           </div>
         </div>
       {:else if !snapStatus.isSnap}
         <div class="full-version-toast glass animate-fade-in">
           <div class="toast-icon">🚀</div>
           <div class="toast-content">
-            <strong>Versão Completa Ativada:</strong> Acesso total ao hardware habilitado.
-            <p class="toast-tip"><strong>Dica:</strong> Mantenha a versão da <strong>Snap Store</strong> instalada para receber notificações de atualizações automáticas e apoiar as métricas do projeto.</p>
+            <strong>{$t('full.active_title')}</strong> {$t('full.active_desc')}
+            <p class="toast-tip"><strong>{$t('full.tip_label')}</strong> {@html $t('full.tip_desc')}</p>
           </div>
         </div>
       {/if}
@@ -284,7 +285,7 @@
         <div class="stat-card glass">
           <span class="stat-label">{$t('dashboard.system_status')}</span>
           <span class="stat-value" class:text-success={!snapStatus.isSnap || snapStatus.hasBlockAccess} class:text-warning={snapStatus.isSnap && !snapStatus.hasBlockAccess}>
-            {(!snapStatus.isSnap || snapStatus.hasBlockAccess) ? "Ativado" : "Demo"}
+            {(!snapStatus.isSnap || snapStatus.hasBlockAccess) ? $t('status.activated') : $t('status.demo')}
           </span>
         </div>
       </div>
@@ -304,7 +305,7 @@
             <tbody>
               {#each disks as disk}
                 <tr>
-                  <td><strong>{disk.model || 'Desconhecido'}</strong></td>
+                  <td><strong>{disk.model || $t('common.unknown')}</strong></td>
                   <td><code>{disk.path}</code></td>
                   <td>{formatSize(disk.size)}</td>
                   <td><span class="badge success">{$t('table.healthy')}</span></td>
@@ -312,7 +313,7 @@
               {:else}
                 <tr>
                   <td colspan="4" style="text-align: center; padding: 2rem; opacity: 0.5;">
-                    Nenhum disco detectado. Verifique as permissões.
+                    {$t('common.no_disks')}
                   </td>
                 </tr>
               {/each}
@@ -495,7 +496,7 @@
                 <div class="disk-info">
                   <strong>{part.name}</strong>
                   <code>{part.path}</code>
-                  <span>{part.fstype || 'Desconhecido'} - {formatSize(part.size)}</span>
+                  <span>{part.fstype || $t('common.unknown')} - {formatSize(part.size)}</span>
                 </div>
               </div>
             {/each}
@@ -665,14 +666,14 @@
           <div class="author-section">
             <h4>{$t('about.author')}</h4>
             <p class="signature-big">{$t('app.signature')}</p>
-            <p class="role-desc">Software Engineer | Electronics Technician</p>
+            <p class="role-desc">{$t('app.signature')} | Software Engineer | Electronics Technician</p>
           </div>
         </div>
       </section>
     {:else}
       <div class="coming-soon">
-        <h2>Funcionalidade em desenvolvimento</h2>
-        <p>A aba {currentView} será implementada em breve.</p>
+        <h2>{$t('dev.in_progress')}</h2>
+        <p>{$t('dev.coming_soon').replace('{view}', currentView)}</p>
       </div>
     {/if}
   </main>

@@ -1,0 +1,321 @@
+Loading svelte-check in workspace: /home/erasmo/GITHUB/clonarMidia/frontend
+Getting Svelte diagnostics...
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/i18n.js:251:13
+Error: Parameter 'key' implicitly has an 'any' type. 
+export const t = derived([locale], ([$locale]) => {
+    return (key) => translations[$locale][key] || key;
+});
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/i18n.js:251:21
+Error: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ pt: { "app.title": string; "app.signature": string; "nav.dashboard": string; "nav.clone_disk": string; "nav.clone_partition": string; "nav.view_partitions": string; "nav.analyze_health": string; "nav.recover": string; ... 108 more ...; "dev.coming_soon": string; }; en: { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ pt: { "app.title": string; "app.signature": string; "nav.dashboard": string; "nav.clone_disk": string; "nav.clone_partition": string; "nav.view_partitions": string; "nav.analyze_health": string; "nav.recover": string; ... 108 more ...; "dev.coming_soon": string; }; en: { ...; }; }'. 
+export const t = derived([locale], ([$locale]) => {
+    return (key) => translations[$locale][key] || key;
+});
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:239:9
+Warn: A11y: visible, non-interactive elements with an on:click event must be accompanied by an on:keydown, on:keyup, or on:keypress event. (svelte)
+      {#if !isRoot}
+        <div class="root-warning glass clickable" on:click={() => showElevateModal = true}>
+          {$t('nav.read_only')}
+        </div>
+      {/if}
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:636:17
+Warn: A11y: A form label must be associated with a control. (svelte)
+            <div class="field">
+                <label>{$t('settings.buffer_size')}</label>
+                <select bind:value={settings.bufferSize}>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:11:7
+Error: Variable 'disks' implicitly has type 'any[]' in some locations where its type cannot be determined. (js)
+
+  let disks = [];
+  let currentView = 'dashboard'; // 'dashboard', 'ver', 'analisar', 'recuperar', 'clonar', 'config', 'sobre'
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:13:7
+Error: Variable 'dragSource' implicitly has type 'any' in some locations where its type cannot be determined. (js)
+  let currentView = 'dashboard'; // 'dashboard', 'ver', 'analisar', 'recuperar', 'clonar', 'config', 'sobre'
+  let dragSource = null;
+  let sourceDisk = null;
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:14:7
+Error: Variable 'sourceDisk' implicitly has type 'any' in some locations where its type cannot be determined. (js)
+  let dragSource = null;
+  let sourceDisk = null;
+  let targetDisk = null;
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:15:7
+Error: Variable 'targetDisk' implicitly has type 'any' in some locations where its type cannot be determined. (js)
+  let sourceDisk = null;
+  let targetDisk = null;
+  let draggingOver = null; // 'source' ou 'target'
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:16:7
+Error: Variable 'draggingOver' implicitly has type 'any' in some locations where its type cannot be determined. (js)
+  let targetDisk = null;
+  let draggingOver = null; // 'source' ou 'target'
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:94:28
+Error: Parameter 'event' implicitly has an 'any' type. (js)
+
+  function handleDragStart(event, disk) {
+    dragSource = { disk };
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:94:35
+Error: Parameter 'disk' implicitly has an 'any' type. (js)
+
+  function handleDragStart(event, disk) {
+    dragSource = { disk };
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:100:28
+Error: Parameter 'event' implicitly has an 'any' type. (js)
+
+  function handleDragEnter(event, type) {
+    event.preventDefault();
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:100:35
+Error: Parameter 'type' implicitly has an 'any' type. (js)
+
+  function handleDragEnter(event, type) {
+    event.preventDefault();
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:109:23
+Error: Parameter 'event' implicitly has an 'any' type. (js)
+
+  function handleDrop(event, targetType) {
+    event.preventDefault();
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:109:30
+Error: Parameter 'targetType' implicitly has an 'any' type. (js)
+
+  function handleDrop(event, targetType) {
+    event.preventDefault();
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:112:10
+Error: Variable 'dragSource' implicitly has an 'any' type. (js)
+    draggingOver = null;
+    if (!dragSource) return;
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:123:7
+Error: Variable 'selectedDisk' implicitly has type 'any' in some locations where its type cannot be determined. (js)
+  let showConfirmModal = false;
+  let selectedDisk = null;
+  let rootPassword = "";
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:127:10
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+  async function startCloning() {
+    if (!sourceDisk || !targetDisk) return;
+    if (sourceDisk.path === targetDisk.path) {
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:127:25
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+  async function startCloning() {
+    if (!sourceDisk || !targetDisk) return;
+    if (sourceDisk.path === targetDisk.path) {
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:144:15
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+    await StartClone({
+      source: sourceDisk.path,
+      destination: targetDisk.path,
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:145:20
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+      source: sourceDisk.path,
+      destination: targetDisk.path,
+      bufferSize: settings.bufferSize
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:168:23
+Error: Parameter 'bytes' implicitly has an 'any' type. (js)
+
+  function formatSize(bytes) {
+    if (bytes === 0) return '0 B';
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:176:24
+Error: Parameter 'bytesPerSec' implicitly has an 'any' type. (js)
+
+  function formatSpeed(bytesPerSec) {
+    if (bytesPerSec === 0) return '0 B/s';
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:282:48
+Error: Variable 'disks' implicitly has an 'any[]' type. (js)
+          <span class="stat-label">{$t('dashboard.total_capacity')}</span>
+          <span class="stat-value">{formatSize(disks.reduce((acc, d) => acc + d.size, 0))}</span>
+        </div>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:305:22
+Error: Variable 'disks' implicitly has an 'any[]' type. (js)
+            <tbody>
+              {#each disks as disk}
+                <tr>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:332:25
+Error: Variable 'draggingOver' implicitly has an 'any' type. (js)
+          class="zone source-zone" 
+          class:active={draggingOver === 'source'}
+          on:dragover|preventDefault
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:339:16
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+          <h3>{$t('clone.source')}</h3>
+          {#if sourceDisk}
+            <div class="disk-card mini">
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:353:25
+Error: Variable 'draggingOver' implicitly has an 'any' type. (js)
+          class="zone target-zone" 
+          class:active={draggingOver === 'target'}
+          on:dragover|preventDefault
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:360:16
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+          <h3>{$t('clone.target')}</h3>
+          {#if targetDisk}
+            <div class="disk-card mini">
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:387:50
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+        <div class="actions">
+          <button class="btn-primary" disabled={!sourceDisk || !targetDisk} on:click={startCloning}>
+            {$t('clone.start')}
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:387:65
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+        <div class="actions">
+          <button class="btn-primary" disabled={!sourceDisk || !targetDisk} on:click={startCloning}>
+            {$t('clone.start')}
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:397:18
+Error: Variable 'disks' implicitly has an 'any[]' type. (js)
+        <div class="grid">
+          {#each disks as disk}
+            <div
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:422:25
+Error: Variable 'draggingOver' implicitly has an 'any' type. (js)
+          class="zone source-zone" 
+          class:active={draggingOver === 'source'}
+          on:dragover|preventDefault
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:429:16
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+          <h3>{$t('clone.source')} ({$t('nav.clone_partition')})</h3>
+          {#if sourceDisk}
+            <div class="disk-card mini">
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:443:25
+Error: Variable 'draggingOver' implicitly has an 'any' type. (js)
+          class="zone target-zone" 
+          class:active={draggingOver === 'target'}
+          on:dragover|preventDefault
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:450:16
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+          <h3>{$t('clone.target')} ({$t('nav.clone_partition')})</h3>
+          {#if targetDisk}
+            <div class="disk-card mini">
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:477:50
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+        <div class="actions">
+          <button class="btn-primary" disabled={!sourceDisk || !targetDisk} on:click={startCloning}>
+            {$t('partition.start')}
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:477:65
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+        <div class="actions">
+          <button class="btn-primary" disabled={!sourceDisk || !targetDisk} on:click={startCloning}>
+            {$t('partition.start')}
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:487:18
+Error: Variable 'disks' implicitly has an 'any[]' type. (js)
+        <div class="grid">
+          {#each disks as disk}
+            {#each disk.partitions || [] as part}
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:514:18
+Error: Variable 'disks' implicitly has an 'any[]' type. (js)
+        <aside class="disk-selector glass">
+          {#each disks as disk}
+            <button class:active={selectedDisk?.path === disk.path} on:click={() => selectedDisk = disk}>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:515:35
+Error: Variable 'selectedDisk' implicitly has an 'any' type. (js)
+          {#each disks as disk}
+            <button class:active={selectedDisk?.path === disk.path} on:click={() => selectedDisk = disk}>
+              {disk.model || disk.name}
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:522:16
+Error: Variable 'selectedDisk' implicitly has an 'any' type. (js)
+        <section class="partition-details">
+          {#if selectedDisk}
+            <div class="visual-disk glass">
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:557:16
+Error: Variable 'disks' implicitly has an 'any[]' type. (js)
+      <div class="health-grid">
+        {#each disks as disk}
+          <div class="health-card glass">
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:588:24
+Error: Variable 'disks' implicitly has an 'any[]' type. (js)
+                <option value="">{$t('recover.select_disk')}</option>
+                {#each disks as disk}
+                  <option value={disk.path}>{disk.model || disk.name} ({disk.path})</option>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:687:69
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+      <div class="confirm-details">
+        <div class="conf-item"><strong>{$t('modal.from')}</strong> {sourceDisk.model || sourceDisk.name} ({sourceDisk.path})</div>
+        <div class="conf-item"><strong>{$t('modal.to')}</strong> {targetDisk.model || targetDisk.name} ({targetDisk.path})</div>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:687:89
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+      <div class="confirm-details">
+        <div class="conf-item"><strong>{$t('modal.from')}</strong> {sourceDisk.model || sourceDisk.name} ({sourceDisk.path})</div>
+        <div class="conf-item"><strong>{$t('modal.to')}</strong> {targetDisk.model || targetDisk.name} ({targetDisk.path})</div>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:687:108
+Error: Variable 'sourceDisk' implicitly has an 'any' type. (js)
+      <div class="confirm-details">
+        <div class="conf-item"><strong>{$t('modal.from')}</strong> {sourceDisk.model || sourceDisk.name} ({sourceDisk.path})</div>
+        <div class="conf-item"><strong>{$t('modal.to')}</strong> {targetDisk.model || targetDisk.name} ({targetDisk.path})</div>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:688:67
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+        <div class="conf-item"><strong>{$t('modal.from')}</strong> {sourceDisk.model || sourceDisk.name} ({sourceDisk.path})</div>
+        <div class="conf-item"><strong>{$t('modal.to')}</strong> {targetDisk.model || targetDisk.name} ({targetDisk.path})</div>
+      </div>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:688:87
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+        <div class="conf-item"><strong>{$t('modal.from')}</strong> {sourceDisk.model || sourceDisk.name} ({sourceDisk.path})</div>
+        <div class="conf-item"><strong>{$t('modal.to')}</strong> {targetDisk.model || targetDisk.name} ({targetDisk.path})</div>
+      </div>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/src/App.svelte:688:106
+Error: Variable 'targetDisk' implicitly has an 'any' type. (js)
+        <div class="conf-item"><strong>{$t('modal.from')}</strong> {sourceDisk.model || sourceDisk.name} ({sourceDisk.path})</div>
+        <div class="conf-item"><strong>{$t('modal.to')}</strong> {targetDisk.model || targetDisk.name} ({targetDisk.path})</div>
+      </div>
+
+/home/erasmo/GITHUB/clonarMidia/frontend/jsconfig.json:3:25
+Warn: Option 'moduleResolution=node10' is deprecated and will stop functioning in TypeScript 7.0. Specify compilerOption '"ignoreDeprecations": "6.0"' to silence this error.
+  Visit https://aka.ms/ts6 for migration information. 
+
+
+/home/erasmo/GITHUB/clonarMidia/frontend/jsconfig.json:6:5
+Warn: Option 'importsNotUsedAsValues' has been removed. Please remove it from your configuration.
+  Use 'verbatimModuleSyntax' instead. 
+
+
+/home/erasmo/GITHUB/clonarMidia/frontend/jsconfig.json:13:5
+Warn: Option 'baseUrl' is deprecated and will stop functioning in TypeScript 7.0. Specify compilerOption '"ignoreDeprecations": "6.0"' to silence this error.
+  Visit https://aka.ms/ts6 for migration information. 
+
+
+====================================
+svelte-check found 48 errors and 5 warnings in 3 files

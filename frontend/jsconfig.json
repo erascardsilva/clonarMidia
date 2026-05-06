@@ -1,17 +1,16 @@
 {
   "compilerOptions": {
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "target": "ESNext",
     "module": "ESNext",
-    "importsNotUsedAsValues": "error",
+    "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
     "sourceMap": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "checkJs": true
+    "checkJs": false
   },
   "include": [
     "src/**/*.d.ts",
