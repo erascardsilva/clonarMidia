@@ -6,7 +6,12 @@
 
 [![Build Status](https://github.com/erascardsilva/clonarMidia/actions/workflows/snapcraft.yml/badge.svg)](https://github.com/erascardsilva/clonarMidia/actions)
 [![Snap Store](https://snapcraft.io/clonarmidia/badge.svg)](https://snapcraft.io/clonarmidia)
+[![Snap Metrics](https://img.shields.io/badge/Snap-Metrics-blue?logo=snapcraft)](https://snapcraft.io/clonarmidia/metrics)
+[![Snap Builds](https://img.shields.io/badge/Snap-Builds-orange?logo=snapcraft)](https://snapcraft.io/clonarmidia/builds)
+[![Snap Releases](https://img.shields.io/badge/Snap-Releases-green?logo=snapcraft)](https://snapcraft.io/clonarmidia/releases)
+[![Snap Listing](https://img.shields.io/badge/Snap-Listing-purple?logo=snapcraft)](https://snapcraft.io/clonarmidia)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 **Clonar Mídia** is a professional, high-performance disk and partition cloning tool designed for Linux. Built with modern technologies, it provides a sleek interface for complex low-level hardware operations.
 
@@ -43,9 +48,13 @@ The **Native Installers** provide unrestricted hardware access.
 ## 🚀 Installation
 
 ### Option A: Install Demo (Snap)
+
+[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/clonarmidia)
+
 ```bash
 sudo snap install clonarmidia --edge
 ```
+
 
 ### Option B: Install Full Version (Recommended for Cloning)
 Download the latest installers directly from our build folder:
@@ -77,5 +86,11 @@ If this tool helped you recover data or save time, consider supporting the devel
 
 ---
 
-**Erasmo Cardoso**  
+### Available on the Snap Store
+
+[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/clonarmidia)
+
+---
+
+**Erasmo Cardoso**<br>
 *Software Engineer | Electronics Technician*
